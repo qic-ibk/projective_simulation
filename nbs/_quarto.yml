@@ -1,0 +1,41 @@
+project:
+  type: website
+  output-dir: docs
+  preview:
+    port: 4200
+    browser: false
+    
+format:
+  html:
+    theme: zephyr
+    css: style.css
+    toc: true
+    linkcolor: "#15adc2ff"
+    monobackgroundcolor: "#f8f4dfff"
+    page-layout: full
+
+website:
+  title: "PS"
+  site-url: "https://qic-uibk.github.io/PS/"
+  description: "Projective Simulation"
+  repo-branch: master
+  repo-url: "https://github.com/qic-uibk/projective-simulation/"
+  twitter-card: true
+  open-graph: true
+  repo-actions: [issue]
+  navbar:  
+    logo: figs/logo.png
+    background: "#f8f6e4ff"
+    foreground: "#154c64ff"
+    search: true      
+    right:
+      - icon: github
+        href: "https://github.com/qic-uibk/projectivesimulation/"      
+  sidebar: 
+    foreground: "#154c64ff"
+    style: floating
+
+
+metadata-files: [sidebar.yml]
+
+

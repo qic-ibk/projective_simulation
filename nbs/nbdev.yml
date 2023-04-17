@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "projective_simulation"
+  site-url: "https://{user}.github.io/projective_simulation/"
+  description: "{description}"
+  repo-branch: master
+  repo-url: "https://github.com/{user}/projective_simulation/"
