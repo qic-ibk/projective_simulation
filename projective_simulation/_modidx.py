@@ -17,5 +17,5 @@ d = { 'settings': { 'branch': 'master',
                                                                                                     'projective_simulation/basic_PS.py'),
                                                 'projective_simulation.basic_PS.PSAgent.train': ( 'lib_nbs/basic_ps.html#psagent.train',
                                                                                                   'projective_simulation/basic_PS.py')},
-            'projective_simulation.utils': { 'projective_simulation.utils.random_func': ( 'lib_nbs/core.html#random_func',
+            'projective_simulation.utils': { 'projective_simulation.utils.random_func': ( 'lib_nbs/utils.html#random_func',
                                                                                           'projective_simulation/utils.py')}}}
