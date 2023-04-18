@@ -8,8 +8,8 @@ Here we will build the new repo release of Projective Simulation. To do
 so, we will use [`nbdev`](https://nbdev.fast.ai/). I tried to simplify
 as much as possible this repo in order to facilitate your contributions.
 If you found this text, it means that you reached the github repo. Next
-step is to FORK! the repo (see contributing below) and the clone your
-fork. Then go to the cloned folder and run:
+step is to FORK! the repo (see contributing below) and clone your fork.
+Then go to the cloned folder and run:
 
     pip install -e .
 
@@ -39,7 +39,7 @@ include them in `nbs/tutorials`!
 ## Contributing
 
 This is currently a template of what we want to build. In order to
-contribute, used your fork to do Pull Requests to the main branch.
-Before merging your contributions, be sure to clean your notebooks from
+contribute, use your fork to do Pull Requests to the main branch. Before
+merging your contributions, be sure to clean your notebooks from
 unnecessary metadata. This is done by running `nbdev_clean` in the
 terminal before you commit your changes!
