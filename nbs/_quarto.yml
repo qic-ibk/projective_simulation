@@ -34,8 +34,14 @@ website:
   sidebar: 
     foreground: "#154c64ff"
     style: floating
-
-
-metadata-files: [sidebar.yml]
-
-
+    collapse-level: 1
+    contents:
+      - text: Get started
+        href: index.ipynb
+      - section: Documentation
+        contents:
+            - lib_nbs/00_utils.ipynb
+            - lib_nbs/01_basic_PS.ipynb
+      - section: Tutorials
+        contents:
+            - tutorials/tutorial_basic_PS.ipynb
