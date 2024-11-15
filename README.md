@@ -6,5 +6,5 @@ PS - Projective Simulation
 
 README in construction!
 
-The README is automatically generated from `nbs/index.ipynb` (pending solving a bug :) ). Any
+The README is automatically generated from `nbs/index.ipynb`. Any
 updates must happen there!
