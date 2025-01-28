@@ -50,7 +50,7 @@ class PS_Agent(ABC):
         raise NotImplementedError
     
     @abstractmethod
-    def deliberate(self, percept):
+    def get_action(self, percept):
         """
         Args:
             percept: Data object to be processed by ECM: vector

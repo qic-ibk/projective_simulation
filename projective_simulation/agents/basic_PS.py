@@ -10,7 +10,7 @@ import numpy as np
 from .abstract_agent import PS_Agent
 from ..ECMs.two_layer import Two_Layer
 from ..methods.preprocessors import get_percept
-from ..utils import _softmax
+
 
 
 class Basic_PSAgent(PS_Agent):
@@ -38,40 +38,14 @@ class Basic_PSAgent(PS_Agent):
         self.percept_processor = percept_processor        
         
         
-    def deliberate(self, 
-                percept: str # .
+    def get_action(self, 
+                observation: object # .
                )-> int : # The action to be performed.
         """
-        Given a percept, returns an action.
-        (1) If percept is new, add to ECM
-        (2) Get action from percept and h-values.
-        (3) Update g-matrix.
+        Given a percept, returns an action. For basic PS, these processess are mainly executed by the ECM's deliberate function
         """
-        #(1) add new percept
-        if percept not in self.ECM.percepts.keys(): 
-            self.ECM.percepts[percept] = self.ECM.num_percepts
-            # increment number of percepts
-            self.ECM.num_percepts += 1
-            # add column to h-matrix
-            self.ECM.hmatrix = np.append(self.ECM.hmatrix, 
-                                     np.ones([1,self.ECM.num_actions]),
-                                     axis=0)
-            # add column to g-matrix
-            self.ECM.gmatrix = np.append(self.ECM.gmatrix, 
-                                    np.zeros([1,self.ECM.num_actions]),
-                                    axis=0)
-        #(2) get action
-        # get index from dictionary entry
-        percept_index = self.ECM.percepts[percept]
-        # get h-values
-        h_values = self.ECM.hmatrix[percept_index]
-        # get probabilities from h-values through a softmax function
-        prob = _softmax(self.ECM.softmax, h_values)
-        # get action
-        action = np.random.choice(range(self.ECM.num_actions), p=prob)        
-        #(3) update g-matrix
-        self.ECM.gmatrix[int(percept_index),int(action)] = 1.
-
+        percept = self.percept_processor(observation)
+        action = self.ECM.deliberate(percept)
         return action
 
     def update(self, reward):

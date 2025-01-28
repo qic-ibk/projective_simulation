@@ -29,3 +29,11 @@ class ECM(ABC):
             action_processor: An optional object for transforming actions prior to passing to Environment as an actuator state. Must have method "postprocess"            
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def deliberate(self, percept: str):
+        """
+        Args:
+            percept: A string corresponding to an existing or new (will be added) key in the ECM percept dictionary
+        """
+        raise NotImplementedError

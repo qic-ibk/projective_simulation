@@ -6,6 +6,7 @@ __all__ = ['Two_Layer']
 # %% ../../nbs/lib_nbs/ECMs/01_two_layer.ipynb 1
 import numpy as np
 from .template_ECM import ECM
+from ..utils import _softmax
 
 class Two_Layer(ECM):
     def __init__(self, 
@@ -39,3 +40,30 @@ class Two_Layer(ECM):
         self.gmatrix = np.zeros([1,self.num_actions])
         #dict: Dictionary of percepts as {"percept": index}
         self.percepts = {}
+
+    def deliberate(self, percept: str):
+        #Add percept to ECM if not already present
+        if percept not in self.percepts.keys(): 
+            self.percepts[percept] = self.num_percepts
+            # increment number of percepts
+            self.num_percepts += 1
+            # add column to h-matrix
+            self.hmatrix = np.append(self.hmatrix, 
+                                     np.ones([1,self.num_actions]),
+                                     axis=0)
+            # add column to g-matrix
+            self.gmatrix = np.append(self.gmatrix, 
+                                    np.zeros([1,self.num_actions]),
+                                    axis=0)
+        #Perform Random Walk
+        # get index from dictionary entry
+        percept_index = self.percepts[percept]
+        # get h-values
+        h_values = self.hmatrix[percept_index]
+        # get probabilities from h-values through a softmax function
+        prob = _softmax(self.softmax, h_values)
+        # get action
+        action = np.random.choice(range(self.num_actions), p=prob)        
+        #pdate g-matrix
+        self.gmatrix[int(percept_index),int(action)] = 1.
+        return(action)
