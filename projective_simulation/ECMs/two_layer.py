@@ -42,6 +42,12 @@ class Two_Layer(ECM):
         self.percepts = {}
 
     def deliberate(self, percept: str):
+        """
+        Given a percept, returns an action and changes the ECM if necessary
+        First, if the percept is new, it will be added to the ECM
+        Then, an action is selected as a function of the percept and the h-values of edges connected to that percept
+        Finally, the g-matrix is updated based on the realized percept-action pair.
+        """
         #Add percept to ECM if not already present
         if percept not in self.percepts.keys(): 
             self.percepts[percept] = self.num_percepts
