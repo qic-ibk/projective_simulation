@@ -49,6 +49,24 @@ class Two_Layer(ECM):
         Finally, the g-matrix is updated based on the realized percept-action pair.
         """
         #Add percept to ECM if not already present
+        self.add_percept(percept)
+        #Perform Random Walk
+        # get index from dictionary entry
+        percept_index = self.percepts[percept]
+        # get h-values
+        h_values = self.hmatrix[percept_index]
+        # get probabilities from h-values through a softmax function
+        prob = _softmax(self.softmax, h_values)
+        # get action
+        action = np.random.choice(range(self.num_actions), p=prob)        
+        #pdate g-matrix
+        self.gmatrix[int(percept_index),int(action)] = 1.
+        return action
+
+    def add_percept(self, percept):
+        '''
+        checks if percept is in dictionary and adds to ECM in not
+        '''
         if percept not in self.percepts.keys(): 
             self.percepts[percept] = self.num_percepts
             # increment number of percepts
@@ -61,15 +79,3 @@ class Two_Layer(ECM):
             self.gmatrix = np.append(self.gmatrix, 
                                     np.zeros([1,self.num_actions]),
                                     axis=0)
-        #Perform Random Walk
-        # get index from dictionary entry
-        percept_index = self.percepts[percept]
-        # get h-values
-        h_values = self.hmatrix[percept_index]
-        # get probabilities from h-values through a softmax function
-        prob = _softmax(self.softmax, h_values)
-        # get action
-        action = np.random.choice(range(self.num_actions), p=prob)        
-        #pdate g-matrix
-        self.gmatrix[int(percept_index),int(action)] = 1.
-        return(action)
