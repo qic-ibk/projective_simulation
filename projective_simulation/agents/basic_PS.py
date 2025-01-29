@@ -7,7 +7,7 @@ __all__ = ['Basic_PSAgent']
 
 # %% ../../nbs/lib_nbs/agents/01_basic_PS.ipynb 2
 import numpy as np
-from .abstract_agent import PS_Agent
+from .abstract_PS import PS_Agent
 from ..ECMs.two_layer import Two_Layer
 from ..methods.preprocessors import get_percept
 

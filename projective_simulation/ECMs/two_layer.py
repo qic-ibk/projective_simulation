@@ -5,7 +5,7 @@ __all__ = ['Two_Layer']
 
 # %% ../../nbs/lib_nbs/ECMs/01_two_layer.ipynb 1
 import numpy as np
-from .template_ECM import ECM
+from .abstract_ECM import ECM
 from ..utils import _softmax
 
 class Two_Layer(ECM):
