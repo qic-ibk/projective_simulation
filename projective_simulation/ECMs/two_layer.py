@@ -79,3 +79,14 @@ class Two_Layer(ECM):
             self.gmatrix = np.append(self.gmatrix, 
                                     np.zeros([1,self.num_actions]),
                                     axis=0)
+
+    def learn(self, reward):
+        """
+        Given a reward, updates h-matrix. Updates g-matrix with glow.
+        """
+        # damping h-matrix
+        self.ECM.hmatrix = self.ECM.hmatrix - self.ECM.damp*(self.ECM.hmatrix-1.)
+        # update h-matrix
+        self.ECM.hmatrix += reward*self.ECM.gmatrix
+        # update g-matrix
+        self.ECM.gmatrix = (1-self.ECM.glow)*self.ECM.gmatrix

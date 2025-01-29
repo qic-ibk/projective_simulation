@@ -52,12 +52,7 @@ class Basic_PSAgent(PS_Agent):
         """
         Given a reward, updates h-matrix. Updates g-matrix with glow.
         """
-        # damping h-matrix
-        self.ECM.hmatrix = self.ECM.hmatrix - self.ECM.damp*(self.ECM.hmatrix-1.)
-        # update h-matrix
-        self.ECM.hmatrix += reward*self.ECM.gmatrix
-        # update g-matrix
-        self.ECM.gmatrix = (1-self.ECM.glow)*self.ECM.gmatrix
+        ECM.learn(reward)
 
     
 
