@@ -52,7 +52,7 @@ class Basic_PSAgent(PS_Agent):
         """
         Given a reward, updates h-matrix. Updates g-matrix with glow.
         """
-        ECM.learn(reward)
+        self.ECM.learn(reward)
 
     
 
