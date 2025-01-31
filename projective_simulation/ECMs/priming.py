@@ -7,7 +7,7 @@ __all__ = ['Priming_ECM']
 import numpy as np
 from .abstract_ECM import ECM
 from .two_layer import Two_Layer
-from ..utils import _softmax
+from ..transforms import _softmax
 
 class Priming_ECM(Two_Layer):
     '''
@@ -31,7 +31,7 @@ class Priming_ECM(Two_Layer):
 
     def deliberate(self, percept):
         '''
-        Almost identical to the deliberate funciton of Two-Layer parent class, but sums h-values and action primes prior to calculating walk probabilities
+        Almost identical to the deliberate function of Two-Layer parent class, but sums h-values and action primes prior to calculating walk probabilities
         '''
         self.add_percept(percept)
         #Perform Random Walk
