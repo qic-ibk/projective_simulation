@@ -23,7 +23,6 @@ class ECM(ABC):
     >>> pass
     """
 
-    @abstractmethod
     def __init__(self, num_actions: int):
         """
         Args:
