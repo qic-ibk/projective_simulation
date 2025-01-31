@@ -5,6 +5,7 @@ __all__ = ['Abstract_Env', 'RLGL']
 
 # %% ../nbs/lib_nbs/05_environments.ipynb 1
 from sys import version_info
+import numpy as np
 
 if version_info >= (3, 4):  # compatibility
     from abc import ABC, abstractmethod

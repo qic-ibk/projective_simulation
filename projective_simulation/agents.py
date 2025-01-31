@@ -74,7 +74,7 @@ class Basic_PSAgent(Abstract_Agent):
         """
         assert isinstance(ECM, Two_Layer) or isinstance(num_actions, int)
         if ECM is None:
-            self.ECM = Two_Layer(num_actions, glow, damp, softmax)
+            self.ECM = ECMs.Two_Layer(num_actions, glow, damp, softmax)
         else:
             self.ECM = ECM
 
