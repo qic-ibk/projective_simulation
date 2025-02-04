@@ -4,23 +4,17 @@
 __all__ = ['Abstract_Agent', 'Basic_PSAgent', 'Situated_Agent']
 
 # %% ../nbs/lib_nbs/03_agents.ipynb 2
-from sys import version_info
+# From lib
 import projective_simulation.methods.preprocessors as preprocessors
 import projective_simulation.ECMs as ECMs
 
-if version_info >= (3, 4):  # compatibility
-    from abc import ABC, abstractmethod
-    ABC = ABC
-else:
-    from abc import ABCMeta, abstractmethod
-    ABC = ABCMeta('ABC', (), {})
+# From others
+from abc import ABC, abstractmethod
 
-
+# %% ../nbs/lib_nbs/03_agents.ipynb 4
 class Abstract_Agent(ABC):
-    """A minimal class every agent should fullfill, every agent should be Derived from this class
-
-    Examples:
-    >>> pass
+    """
+    A minimal class every agent should fullfill, every agent should be Derived from this class
     """
 
     def __init__(self, 
@@ -54,8 +48,7 @@ class Abstract_Agent(ABC):
 
         raise NotImplementedError
 
-
-# %% ../nbs/lib_nbs/03_agents.ipynb 4
+# %% ../nbs/lib_nbs/03_agents.ipynb 6
 class Basic_PSAgent(Abstract_Agent):
     def __init__(self, 
                  ECM = None, #if an ECM object is not given, a number of actions must be given with whi
@@ -73,6 +66,7 @@ class Basic_PSAgent(Abstract_Agent):
         
         """
         assert isinstance(ECM, ECMs.Two_Layer) or isinstance(num_actions, int)
+        
         if ECM is None:
             self.ECM = ECMs.Two_Layer(num_actions, glow, damp, softmax)
         else:
@@ -99,7 +93,7 @@ class Basic_PSAgent(Abstract_Agent):
         """
         self.ECM.learn(reward)
 
-# %% ../nbs/lib_nbs/03_agents.ipynb 6
+# %% ../nbs/lib_nbs/03_agents.ipynb 8
 class Situated_Agent(Abstract_Agent):
     def __init__(self, 
                  reflex_ECM = None, #if an ECM object is not given, a number of actions must be given with which to create one
