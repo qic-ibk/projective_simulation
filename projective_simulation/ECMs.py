@@ -4,7 +4,7 @@
 __all__ = ['Abstract_ECM', 'Two_Layer', 'Priming_ECM', 'Episodic_Memory']
 
 # %% ../nbs/lib_nbs/04_ECMs.ipynb 2
-import projective_simulation.transforms as transforms
+import projective_simulation.methods.transforms as transforms
 import numpy as np
 
 from abc import ABC, abstractmethod
