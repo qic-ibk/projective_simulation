@@ -72,7 +72,7 @@ class Basic_PSAgent(Abstract_Agent):
         NOTE: This simple version misses some features such as clip deletion, emotion tags or generalization mechanisms.
         
         """
-        assert isinstance(ECM, Two_Layer) or isinstance(num_actions, int)
+        assert isinstance(ECM, ECMs.Two_Layer) or isinstance(num_actions, int)
         if ECM is None:
             self.ECM = ECMs.Two_Layer(num_actions, glow, damp, softmax)
         else:
