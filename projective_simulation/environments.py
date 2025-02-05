@@ -3,17 +3,11 @@
 # %% auto 0
 __all__ = ['Abstract_Env', 'RLGL']
 
-# %% ../nbs/lib_nbs/05_environments.ipynb 1
-from sys import version_info
+# %% ../nbs/lib_nbs/05_environments.ipynb 2
 import numpy as np
+from abc import ABC, abstractmethod
 
-if version_info >= (3, 4):  # compatibility
-    from abc import ABC, abstractmethod
-    ABC = ABC
-else:
-    from abc import ABCMeta, abstractmethod
-    ABC = ABCMeta('ABC', (), {})
-
+# %% ../nbs/lib_nbs/05_environments.ipynb 4
 class Abstract_Env(ABC):
     """A minimal Environment, every environment should be Derived from this class.
 
@@ -44,7 +38,7 @@ class Abstract_Env(ABC):
         """
         raise NotImplementedError
 
-# %% ../nbs/lib_nbs/05_environments.ipynb 2
+# %% ../nbs/lib_nbs/05_environments.ipynb 6
 class RLGL(Abstract_Env):
     def __init__(self, state = 0, transition_matrix = None):
         self.state = state
