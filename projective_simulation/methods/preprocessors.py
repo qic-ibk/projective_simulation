@@ -23,6 +23,8 @@ class factorizor():
     '''
 
     def get_percept(self, observation):
+        if type(observation) == int:
+            observation = [observation]
         percept_indices = [None] * len(observation)
         for i in range(len(observation)):
             if not str(i) in self.percept_dict.keys(): #add new dictionary for any new dimensions in observation

@@ -6,6 +6,7 @@ __all__ = ['Abstract_ECM', 'Two_Layer', 'Priming_ECM', 'Episodic_Memory']
 # %% ../nbs/lib_nbs/04_ECMs.ipynb 2
 import projective_simulation.methods.transforms as transforms
 import numpy as np
+import scipy
 
 from abc import ABC, abstractmethod
 
@@ -41,8 +42,7 @@ class Two_Layer(Abstract_ECM):
                  glow: float, # The glow (or eta) parameter. 
                  damp: float, # The damping (or gamma) parameter. 
                  softmax: float # The softmax (or beta) parameter.
-                ):
-
+                ):        
         """
         Simple, 2-layered ECM. We initialize an h-matrix with a single row of `num_actions` 
         entries corresponding to a dummy percept clip being connected to all possible actions with h-values of all 1. We 
@@ -54,7 +54,6 @@ class Two_Layer(Abstract_ECM):
         NOTE: This simple version misses some features such as clip deletion, emotion tags or generalization mechanisms.
         
         """
-
         self.num_actions = num_actions
         self.glow = glow
         self.damp = damp
@@ -292,12 +291,12 @@ class Episodic_Memory(Abstract_ECM):
         not_action = np.invert(self.action_encoder) #used to exclude action representations from surprise computations
         return np.sum(np.where(percept[not_action], -np.log2(self.expectations[not_action]), -np.log2(1-self.expectations[not_action])))
             
-    def _get_diffusion_mass(activation, edge_probs, random_selection, focus):
-        #gets the activation mass that diffuses along each edge connected to a perceptual representation. Note the different effect of the focus parameter if the edge was selected by PS random walk
-        diffusions = [None] * len(edge_probs)
-        for i in range(len(edge_probs)):
-            if i == random_selection:
-                diffusions[i] = activation * (edge_probs[i] + focus*(1-edge_probs[i]))
-            else:
-                diffusions[i] = activation * edge_probs[i] * (1 - focus)
-        return(diffusions)
+def _get_diffusion_mass(activation, edge_probs, random_selection, focus):
+    #gets the activation mass that diffuses along each edge connected to a perceptual representation. Note the different effect of the focus parameter if the edge was selected by PS random walk
+    diffusions = [None] * len(edge_probs)
+    for i in range(len(edge_probs)):
+        if i == random_selection:
+            diffusions[i] = activation * (edge_probs[i] + focus*(1-edge_probs[i]))
+        else:
+            diffusions[i] = activation * edge_probs[i] * (1 - focus)
+    return(diffusions)

@@ -120,7 +120,7 @@ class Situated_Agent(Abstract_Agent):
 
         assert isinstance(episode_ECM, ECMs.Episodic_Memory) or isinstance(memory_capacity, int)
         if episode_ECM is None:
-            self.episode_ECM = Episodic_Memory(num_actions = self.reflex_ECM.num_actions, 
+            self.episode_ECM = ECMs.Episodic_Memory(num_actions = self.reflex_ECM.num_actions, 
                                                capacity = memory_capacity, 
                                                softmax = PS_softmax,
                                                focus = focus,
@@ -135,11 +135,14 @@ class Situated_Agent(Abstract_Agent):
         self.num_actions = self.reflex_ECM.num_actions
 
         if percept_processor is None:
-            self.percept_processor = perprocessors.action_factorizor(num_actions = self.num_actions)
+            self.percept_processor = preprocessors.action_factorizor(num_actions = self.num_actions)
         else:
             self.percept_processor = percept_processor
 
     def get_action(self, observation):
+        '''
+        runs the SiPS agent preprocessor and deliberation. Observation should be a list or int.
+        '''
         action = self.reflex_ECM.deliberate(str(observation))
         percept = self.percept_processor.get_percept(observation, action)
         self.episode_ECM.deliberate(percept) #runs predictions, priming actions for next step.
