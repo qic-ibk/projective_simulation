@@ -97,7 +97,7 @@ class Basic_PSAgent(Abstract_Agent):
 class Situated_Agent(Abstract_Agent):
     def __init__(self, 
                  reflex_ECM = None, #if an ECM object is not given, a number of actions must be given with which to create one
-                 episode_ECM = None,
+                 episode_ECM = None, #if an ECM object is not given, a memory capacity must be given. This will be used to creat a new ECM
                  num_actions = None, # The number of available actions. If an ECM is not given, should be int
                  memory_capacity:int = None,
                  glow: float = 0.1, # The glow (or eta) parameter. Won't be used if ECM is given
@@ -112,13 +112,13 @@ class Situated_Agent(Abstract_Agent):
                  percept_processor = None, 
                  action_processor = None
                 ):
-        assert isinstance(reflex_ECM, Priming_ECM) or isinstance(num_actions, int)
+        assert isinstance(reflex_ECM, ECMs.Priming_ECM) or isinstance(num_actions, int)
         if reflex_ECM is None:
             self.reflex_ECM = ECMs.Priming_ECM(num_actions, glow, damp, reflex_softmax)
         else:
             self.reflex_ECM = reflex_ECM
 
-        assert isinstance(episode_ECM, Episodic_Memory) or isinstance(memory_capacity, int)
+        assert isinstance(episode_ECM, ECMs.Episodic_Memory) or isinstance(memory_capacity, int)
         if episode_ECM is None:
             self.episode_ECM = Episodic_Memory(num_actions = self.reflex_ECM.num_actions, 
                                                capacity = memory_capacity, 
