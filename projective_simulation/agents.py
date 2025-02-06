@@ -134,10 +134,10 @@ class Situated_Agent(Abstract_Agent):
         assert self.reflex_ECM.num_actions == self.episode_ECM.num_actions
         self.num_actions = self.reflex_ECM.num_actions
 
-        if percept_processor is None:
+        super().__init__(ECM = self.episode_ECM, percept_processor = percept_processor)
+
+        if self.percept_processor is None:
             self.percept_processor = preprocessors.action_factorizor(num_actions = self.num_actions)
-        else:
-            self.percept_processor = percept_processor
 
     def get_action(self, observation):
         '''

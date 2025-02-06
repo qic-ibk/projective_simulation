@@ -170,7 +170,7 @@ class Episodic_Memory(Abstract_ECM):
                                     #If focus == 1, deliberation acts as a random walk of a single (massive) particle on the ECM. 
                                     #If focus == 0, deliberation acts as the diffusion of a large (approaching infinite) number of particles on the ECM
                  error_tolerance: float = 0.01, #How strongly the agent discounts the similarity between two states per bit of mismatched sensory information when establishing a new belief state
-                 intrinsic_expectations: dict = {}, #If a key in this dictionary corresponds to an index of the agent's perceptual representations, the items value will be added to that percepts expectation value during the agent's predictions. Agents will seek out states that excite perceptual representations with intrinsic expectation
+                 intrinsic_expectations: dict = None, #If a key in this dictionary corresponds to an index of the agent's perceptual representations, the items value will be added to that percepts expectation value during the agent's predictions. Agents will seek out states that excite perceptual representations with intrinsic expectation
                  min_expectation: float = 0.01,  # a baseline value for the priming of perceptual representations. Must be greater than 0 to prevent infinate surprise if a perceptual representation is excited that was not predicted by the agents belief state. Note this will be transormed by the logistic function, so entropy calculations are not done using precisely this number
                  deliberation_length: int = 1,   # deliberation_length: the number of diffusive steps in the agent's deliberations
                  t: int = 0, #used to model the temporal excitation sequence of memory traces
@@ -195,7 +195,7 @@ class Episodic_Memory(Abstract_ECM):
         self.softmax = 0.7 
         self.focus = focus 
         self.error_tolerance = error_tolerance
-        self.intrinsic_expectations = intrinsic_expectations
+        self.intrinsic_expectations = {} if intrinsic_expectations is None else intrinsic_expectations
         self.min_expectation = min_expectation
         self.deliberation_length = deliberation_length
         self.surprise: float = None

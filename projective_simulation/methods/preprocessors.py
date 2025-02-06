@@ -14,8 +14,8 @@ def get_percept(observation):
 import numpy as np
 
 class factorizor():
-    def __init__(self, percept_dict = {}):
-        self.percept_dict = percept_dict
+    def __init__(self, percept_dict = None):
+        self.percept_dict = {} if percept_dict is None else percept_dict
     '''
     This preprocessor maintains a dictionary of all sensory elements and the order of their appearance.
     This order can be used to index the corresponding sensory representation in an ECM with factorized percepts such as the episodic ECM
@@ -44,8 +44,8 @@ class action_factorizor(factorizor):
     It thus intialize its percept dictionary with a dictionary of these n actions that label the first n sensory representations of the agent
     It also handles the addition of the observed action to the percept when get_percept is called
     '''
-    def __init__(self, percept_dict = {},num_actions=None):
-        self.percept_dict = percept_dict
+    def __init__(self, percept_dict = None,num_actions=None):
+        super().__init__(percept_dict)
         assert 'actions' in self.percept_dict.keys() or num_actions is not None
         if num_actions is not None:
             self.percept_dict['actions'] = {}
