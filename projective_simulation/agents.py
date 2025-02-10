@@ -105,7 +105,7 @@ class Situated_Agent(Abstract_Agent):
                  reflex_softmax: float = 0.1, # The softmax (or beta) parameter. Won't be used if ECM is given
                  PS_softmax: float = 0.7,
                  focus: float = 0,
-                 error_tolerance: float = 0.01,
+                 kappa: float = 1.,
                  min_expectation: float = 0.01,
                  deliberation_length: int = 1,
                  t = 0,
@@ -124,7 +124,7 @@ class Situated_Agent(Abstract_Agent):
                                                capacity = memory_capacity, 
                                                softmax = PS_softmax,
                                                focus = focus,
-                                               error_tolerance = error_tolerance,
+                                               kappa = kappa,
                                                min_expectation = min_expectation,
                                                deliberation_length = deliberation_length,
                                                t = t

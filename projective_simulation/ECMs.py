@@ -6,7 +6,6 @@ __all__ = ['Abstract_ECM', 'Two_Layer', 'Priming_ECM', 'Episodic_Memory']
 # %% ../nbs/lib_nbs/04_ECMs.ipynb 2
 import projective_simulation.methods.transforms as transforms
 import numpy as np
-import scipy
 
 from abc import ABC, abstractmethod
 
@@ -169,7 +168,7 @@ class Episodic_Memory(Abstract_ECM):
                                     #Think of deliberation in an Episodic ECM like a very large number of particles diffusing on the ECM graph, but at each node a single particle is chosen at random and some proportion of particles are pulled along with that one. Focus defines that proportion
                                     #If focus == 1, deliberation acts as a random walk of a single (massive) particle on the ECM. 
                                     #If focus == 0, deliberation acts as the diffusion of a large (approaching infinite) number of particles on the ECM
-                 error_tolerance: float = 0.01, #How strongly the agent discounts the similarity between two states per bit of mismatched sensory information when establishing a new belief state
+                 kappa: float = 1., #How strongly the agent discounts the similarity between two states per bit of mismatched sensory information when establishing a new belief state
                  intrinsic_expectations: dict = None, #If a key in this dictionary corresponds to an index of the agent's perceptual representations, the items value will be added to that percepts expectation value during the agent's predictions. Agents will seek out states that excite perceptual representations with intrinsic expectation
                  min_expectation: float = 0.01,  # a baseline value for the priming of perceptual representations. Must be greater than 0 to prevent infinate surprise if a perceptual representation is excited that was not predicted by the agents belief state. Note this will be transormed by the logistic function, so entropy calculations are not done using precisely this number
                  deliberation_length: int = 1,   # deliberation_length: the number of diffusive steps in the agent's deliberations
@@ -194,7 +193,7 @@ class Episodic_Memory(Abstract_ECM):
         self.capacity = capacity
         self.softmax = 0.7 
         self.focus = focus 
-        self.error_tolerance = error_tolerance
+        self.kappa = kappa
         self.intrinsic_expectations = {} if intrinsic_expectations is None else intrinsic_expectations
         self.min_expectation = min_expectation
         self.deliberation_length = deliberation_length
@@ -240,18 +239,20 @@ class Episodic_Memory(Abstract_ECM):
 
     def excite_traces(self, percept):
         self.trace_excitations = np.zeros(self.capacity)
-        # each trace is excited proportionally to the probability that of the n connections it has to perceptual representations, r of those perceptual representations are excited . . .
+        # each trace is excited proportionally to the probability that of the n connections it has to perceptual representations, each of those perceptual representations are excited . . .
         # . . . if that trace effectively represents the current world state . . .
-        # . . . and sensory_error gives the probability that a connected sensory_representation fails to excite when the world is in the state represented by the memory trace.
-        # this probability is given by the binomial distribution
+        # . . . a logistic transfomation of connecting edge gives the probability that a sensory representation fails to excite when the world is in the state represented by the memory trace.
         for t_index in range(self.capacity):
-            n = np.sum(self.trace_encoder[0:,t_index])
-            if n > 0: #no excitation if trace has no connections (functionally this shouldn't matter, but it is nicer for interpretation)
-                r = np.sum([self.trace_encoder[p_index,t_index] and percept[p_index] for p_index in range(len(percept))]) # for each percept, checks that it is both excited and connected to trace, then counts
-                self.trace_excitations[t_index] = scipy.stats.binom.pmf(r,n,p = 1-self.error_tolerance)
+            connections = [i for i in range(np.shape(self.trace_encoder)[0]) if self.trace_encoder[i,t_index]] #indexes of percept nodes with connections to memory trace
+            if np.sum(connections) > 0: #no excitation if trace has no connections (functionally this shouldn't matter, but it is nicer for interpretation)
+                #we fill the likelihoods vector
+                excitation_probs = transforms._logistic(self.hmatrix[connections,t_index], k = self.kappa)
+                likelihoods = excitation_probs**percept[connections] * ((1-excitation_probs)**(1-percept[connections])) #probabilities of Bernoulli trials with outcome equal to the excitation of connected percept nodes
+                self.trace_excitations[t_index] = np.prod(likelihoods)
     
     def encode_trace(self, percept):
         self.trace_encoder[0:,self.t] = [x > 0 for x in percept] #connect all excited percepts to current trace
+        self.hmatrix[0:,self.t] = percept #h-values of edges are set to excitation of connected representation
         self.mmatrix[self.t-1,self.t] = 1 #create forward connection from previous trace to current trace (this is a spurious but inconsequential connection for an agent's first step)
         self.mmatrix[self.t,0:] = [0 for x in self.mmatrix[self.t,0:]] #break any forward connections from current trace (only relevant if t is greater than self.capacity)
         self.valences[self.t-1] = self.surprise #valence is assigned to the last trace, it relfects how surprised the agent was by the outcome of the action it took in that trace
