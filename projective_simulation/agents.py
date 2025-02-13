@@ -125,7 +125,7 @@ class Situated_Agent(Abstract_Agent):
                                                softmax = PS_softmax,
                                                focus = focus,
                                                kappa = kappa,
-                                               min_expectation = min_expectation,
+                                               epsilon = min_expectation,
                                                deliberation_length = deliberation_length,
                                                t = t
                                               )

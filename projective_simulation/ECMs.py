@@ -170,7 +170,7 @@ class Episodic_Memory(Abstract_ECM):
                                     #If focus == 0, deliberation acts as the diffusion of a large (approaching infinite) number of particles on the ECM
                  kappa: float = 1., #How strongly the agent discounts the similarity between two states per bit of mismatched sensory information when establishing a new belief state
                  intrinsic_expectations: dict = None, #If a key in this dictionary corresponds to an index of the agent's perceptual representations, the items value will be added to that percepts expectation value during the agent's predictions. Agents will seek out states that excite perceptual representations with intrinsic expectation
-                 min_expectation: float = 0.01,  # a baseline value for the priming of perceptual representations. Must be greater than 0 to prevent infinate surprise if a perceptual representation is excited that was not predicted by the agents belief state. Note this will be transormed by the logistic function, so entropy calculations are not done using precisely this number
+                 epsilon: float = 0.01,  # a baseline value for the priming of perceptual representations. Must be greater than 0 to prevent infinate surprise if a perceptual representation is excited that was not predicted by the agents belief state. Note this will be transormed by the logistic function, so entropy calculations are not done using precisely this number
                  deliberation_length: int = 1,   # deliberation_length: the number of diffusive steps in the agent's deliberations
                  t: int = 0, #used to model the temporal excitation sequence of memory traces
                  expectation_scale: float = 3 #A logistic function is used to scale percept priming between zero and one. This default rate parameter keeps the function used approximately linear when the input is between 0.1 and 0.8
@@ -195,7 +195,7 @@ class Episodic_Memory(Abstract_ECM):
         self.focus = focus 
         self.kappa = kappa
         self.intrinsic_expectations = {} if intrinsic_expectations is None else intrinsic_expectations
-        self.min_expectation = min_expectation
+        self.epsilon = epsilon
         self.deliberation_length = deliberation_length
         self.surprise: float = None
         self.expectation_scale = expectation_scale
@@ -208,7 +208,7 @@ class Episodic_Memory(Abstract_ECM):
         self.mmatrix = np.zeros((self.capacity, self.capacity)) #initialize with no connections between memory traces
         self.trace_encoder = np.zeros((self.num_actions, self.capacity), dtype = 'bool') #boolean matrix indicating whether a percept node was encoded in a trace
         self.action_encoder = np.ones(self.num_actions, dtype = 'bool') #boolean matrix indicated whether a percept node belongs to an action
-        self.expectations = np.zeros(self.num_actions) + self.min_expectation
+        self.expectations = np.zeros(self.num_actions)
         self.beliefs = np.zeros(self.capacity) #initilize with no belief weight on any memory traces
         self.valences = np.array([np.nan] * self.capacity) #use nan here because we will want to takes means of this array as it is filled
         self.percept_activations = np.zeros(np.shape(self.hmatrix)[0]) #initialize with no activation of percept nodes
@@ -235,8 +235,8 @@ class Episodic_Memory(Abstract_ECM):
             self.hmatrix = np.append(self.hmatrix, np.zeros((len(new_elements), self.capacity)), axis = 0) #add baseline weights to connections between new percept nodes and all traces
             self.trace_encoder = np.append(self.trace_encoder, np.zeros((len(new_elements), self.capacity), dtype = 'bool'), axis = 0) #new percept nodes have no existing connections to trace nodes
             self.action_encoder = np.append(self.action_encoder, np.zeros(len(new_elements), dtype = 'bool')) #this ECM does not support new actions, so new percept nodes are sensory by default
-            self.expectations = np.append(self.expectations, np.zeros(len(new_elements)) + self.min_expectation)
-
+            self.expectations = np.append(self.expectations, np.array([transforms._shifted_exp(0,0, epsilon = self.epsilon) for x in range(len(new_elements))])) #sets new expectation states the same as existing sensory representations not predicted by deliberation
+            
     def excite_traces(self, percept):
         self.trace_excitations = np.zeros(self.capacity)
         # each trace is excited proportionally to the probability that of the n connections it has to perceptual representations, each of those perceptual representations are excited . . .
@@ -265,29 +265,39 @@ class Episodic_Memory(Abstract_ECM):
         self.percept_activations[self.trace_encoder[0:,self.t]] = [activation_weights[i] + self.focus*(1-activation_weights[i]) if i == random_selection else activation_weights[i] * (1-self.focus) for i in range(len(activation_weights))]
 
     def diffuse_activation(self):
+        new_percept_activations = np.zeros(np.shape(self.hmatrix)[0])
         new_trace_activations = np.zeros(self.capacity)
+        #get diffusion from percept nodes
         for i in range(np.shape(self.hmatrix)[0]):
-            #edge weights are the product of the the edge h-values exponent (relevance), the activation of the trace to which the edge is connected (belief prior), and the excitation of the trace to which the edge is connected (sensory evidence)
-            edge_weights = np.multiply(np.exp(self.hmatrix[i,self.trace_encoder[i,0:]]), self.trace_activations[self.trace_encoder[i,0:]], self.trace_excitations[self.trace_encoder[i,0:]])
+            #edge weights are the product of the the edge h-values exponent (relevance), the prior expectation of the trace to which the edge is connected (belief prior), and the excitation of the trace to which the edge is connected (sensory evidence)
+            edge_weights = np.exp(self.hmatrix[i,self.trace_encoder[i,0:]]) * self.beliefs[self.trace_encoder[i,0:]] * self.trace_excitations[self.trace_encoder[i,0:]]
             if len(edge_weights) > 0: #dont diffusion activation if there are no edges (there should not be to activation to diffuse)    
                 edge_probs = transforms._softmax(self.softmax, edge_weights)
                 random_selection = np.random.choice(range(len(edge_weights)), p = edge_probs) #get destination of Projective Simulations
                 diffusion_mass = _get_diffusion_mass(self.percept_activations[i], edge_probs, random_selection, self.focus)
                 new_trace_activations[self.trace_encoder[i,0:]] = new_trace_activations[self.trace_encoder[i,0:]] + diffusion_mass
+        #get diffusion from memory traces
+        for n in range(np.shape(self.hmatrix)[1]):
+            #edge weights are the product of the the edge h-values exponent (relevance), the activation of the trace to which the edge is connected (belief prior), and the excitation of the trace to which the edge is connected (sensory evidence)
+            edge_weights = np.exp(self.hmatrix[self.trace_encoder[0:,n],n])
+            if len(edge_weights) > 0: #dont diffuse activation if there are no edges (there should not be to activation to diffuse)    
+                edge_probs = transforms._softmax(self.softmax, edge_weights)
+                random_selection = np.random.choice(range(len(edge_weights)), p = edge_probs) #get destination of Projective Simulations
+                diffusion_mass = _get_diffusion_mass(self.trace_activations[n], edge_probs, random_selection, self.focus)
+                new_percept_activations[self.trace_encoder[0:,n]] = new_percept_activations[self.trace_encoder[0:,n]] + diffusion_mass
+        self.percept_activations = new_percept_activations
         self.trace_activations = new_trace_activations
 
     def predict(self):
-        self.trace_activations = np.matmul(self.trace_activations, self.mmatrix) # because each row of the matrix has either zeros or a single 1, this just propogates attention forward. non-linear functions might be necessary for more complex mmatrix structures
-        self.expectations = np.zeros(np.shape(self.hmatrix)[0]) + self.min_expectation #hmatrix rows correspond to perceptual representations
-        for percept_representation in self.intrinsic_expectations.keys():                   #if a percept representation has an intrinsic expectation, use that instead of the minimum.
-            if percept_representation in range(len(self.expectations)):
-                self.expectations[percept_rerpresentation] = self.intrinsic_expectations[percept_representation]
+        self.beliefs = np.matmul(self.trace_activations, self.mmatrix) # because each row of the matrix has either zeros or a single 1, this just propogates attention forward. non-linear functions might be necessary for more complex mmatrix structures
+        self.expectations = np.zeros(np.shape(self.hmatrix)[0]) #hmatrix rows correspond to perceptual representations
         for trace in range(self.capacity):
             action_modifiers = np.exp(self.action_encoder * (np.nanmean(self.valences) - self.valences[trace])) #used to scale priming of action representations as a function of trace valence
             action_modifiers = [0 if np.isnan(modifier) else modifier for modifier in action_modifiers]
-            self.expectations = self.expectations + self.trace_activations[trace] * np.multiply(self.trace_encoder[0:,trace], action_modifiers)
-        self.expectations[np.invert(self.action_encoder)] = transforms._logistic(self.expectations[np.invert(self.action_encoder)], L = 2, y_shift = -1, k = self.expectation_scale) #the logistic function with L = 2 and y_shift = -1 scales positive real inputs between 0 and 1, and the expectation scale defines the rate at which the function approaches 1
-
+            self.expectations = self.expectations + self.trace_activations[trace] * transforms._logistic(self.hmatrix[0:,trace], k = self.kappa) * self.trace_encoder[0:,trace] * action_modifiers
+        intrinsics = [intrinsic_expectations.values()[i] if i in self.intrinsic_expectations.keys() else 0 for i in range(np.shape(self.hmatrix)[0])] #not sure whether this is nice/faster than maintaining a vector of intrinsic expectations that has zeros added whenever a new sensory representation is created?
+        self.expectations = np.array([transforms._shifted_exp(intrinsics[i], self.expectations[i], epsilon = self.epsilon) for i in range(len(self.expectations))]) # right now this has the property of slightly changing action priming. Could easily just exclude action representations from this operation, but maybe there is a more elegant solution?
+        
     def get_surprise(self, percept):
         not_action = np.invert(self.action_encoder) #used to exclude action representations from surprise computations
         return np.sum(np.where(percept[not_action], -np.log2(self.expectations[not_action]), -np.log2(1-self.expectations[not_action])))
@@ -300,4 +310,4 @@ def _get_diffusion_mass(activation, edge_probs, random_selection, focus):
             diffusions[i] = activation * (edge_probs[i] + focus*(1-edge_probs[i]))
         else:
             diffusions[i] = activation * edge_probs[i] * (1 - focus)
-    return(diffusions)
+    return(diffusions) 
