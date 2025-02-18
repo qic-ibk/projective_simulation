@@ -102,8 +102,8 @@ class Situated_Agent(Abstract_Agent):
                  memory_capacity:int = None,
                  glow: float = 0.1, # The glow (or eta) parameter. Won't be used if ECM is given
                  damp: float = 0., # The damping (or gamma) parameter. Won't be used if ECM is given
-                 reflex_softmax: float = 0.1, # The softmax (or beta) parameter. Won't be used if ECM is given
-                 PS_softmax: float = 0.7,
+                 reflex_softmax: float = 1., # The softmax (or beta) parameter. Won't be used if ECM is given
+                 PS_softmax: float = 1.,
                  focus: float = 0,
                  kappa: float = 1.,
                  min_expectation: float = 0.01,
