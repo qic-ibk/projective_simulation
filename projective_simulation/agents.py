@@ -105,7 +105,7 @@ class Situated_Agent(Abstract_Agent):
                  reflex_softmax: float = 1., # The softmax (or beta) parameter. Won't be used if ECM is given
                  PS_softmax: float = 1.,
                  focus: float = 0,
-                 kappa: float = 1.,
+                 kappa: float = 1., #How strongly the agent discounts the similarity between two states per bit of mismatched sensory information when establishing a new belief state
                  min_expectation: float = 0.01,
                  deliberation_length: int = 1,
                  t = 0,
@@ -145,7 +145,7 @@ class Situated_Agent(Abstract_Agent):
         '''
         action = self.reflex_ECM.deliberate(str(observation))
         percept = self.percept_processor.get_percept(observation, action)
-        self.episode_ECM.deliberate(percept) #runs predictions, priming actions for next step.
+        self.reflex_ECM.action_primes = self.episode_ECM.deliberate(percept) #runs predictions, priming actions for next step.
         return(action)
 
     def update(self):
