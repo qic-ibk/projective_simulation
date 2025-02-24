@@ -24,7 +24,6 @@ class Abstract_ECM(ABC):
             percept_processor: An optional object for transforming observations prior to passing to ECM as a percept. Must have method "preprocess"
             action_processor: An optional object for transforming actions prior to passing to Environment as an actuator state. Must have method "postprocess"            
         """
-        raise NotImplementedError
 
     @abstractmethod
     def deliberate(self, percept: str):
@@ -327,7 +326,7 @@ class Bayesian_Memory_Network(Abstract_ECM):
         '''
         The Bayesian Memory Network is a graph that acts like a recurrent neural network to perform an approximate Bayesian Inference in unknown environments (where the true posterior is not known).       
         '''
-
+        super().__init__(num_actions = 0)
         #initialize constants
         self.N_traces = N_traces
         self.kappa = kappa
@@ -353,6 +352,9 @@ class Bayesian_Memory_Network(Abstract_ECM):
         self.trace_activations = np.zeros(self.N_traces) #initialize with no activation of memory traces
         
     def deliberate(self, percept):
+        '''
+        iterates over each of the ECMs operations after recieving a new state (percept)
+        '''
         self.percept_excitations = percept
         self.add_percept()
         self.excite_traces()
@@ -364,6 +366,9 @@ class Bayesian_Memory_Network(Abstract_ECM):
         return(self.percept_expectations) #return action priming
 
     def add_percept(self):
+        '''
+        Checks whether current excitation state contains new percept representations and adds any such representations to the BMNs W matrix and percept_excitations vector
+        '''
         if np.shape(self.percept_excitations)[0] > np.shape(self.W)[0]: #if percept excitation is longer than the first dimension of the excitations weights it means there is something new in the percept
             i = np.shape(self.W)[0] #get index for new elements in ECM
             new_elements = self.percept_excitations[i:]    
@@ -371,26 +376,41 @@ class Bayesian_Memory_Network(Abstract_ECM):
             self.percept_expectations = np.append(self.percept_expectations, np.array([transforms._shifted_exp(0,0, epsilon = self.epsilon) for _ in range(len(new_elements))])) #sets new expectation states the same as existing sensory representations not predicted by deliberation
             
     def excite_traces(self):
+        '''
+        Excites the memory traces as a function of percept representation excitation, excitation weights, and the kappa parameter.
+        '''
         percept_excitation_likelihoods = np.vectorize(transforms._logistic)(x = self.W, k = self.kappa)
         self.trace_excitations = np.array([np.prod(percept_excitation_likelihoods[0:,j] ** self.percept_excitations * (1 - percept_excitation_likelihoods[0:,j]) ** (1 - self.percept_excitations)) for j in range(self.N_traces)])
     
     def encode_trace(self):
+        '''
+        update W and C as function of new percept and internal phase tracker (t)
+        '''
         self.W[0:,self.t] = [1 if self.percept_excitations[i] == 1 else -1 for i in range(np.shape(self.W)[0])] #excitation weights to new trace are set to baseline activation (1) or inhibition (-1) based on current percept excitations
         self.C[self.t-1,self.t] = 1 #create forward connection from previous trace to current trace (this is a spurious but inconsequential connection for an agent's first step)
         self.C[self.t,0:] = [0] * np.shape(self.C)[1] #break any forward connections from current trace (only relevant if T is greater than N_traces)
         
     
     def activate(self):
+        '''
+        removes excitation and expectation from newly encoded trace, sets its activation to 1, and removes activation from all other traces
+        '''
         self.trace_excitations[self.t] = 0
         self.trace_expectations[self.t] = 0
         self.trace_activations = np.array([1 if i == self.t else 0 for i in range(self.N_traces)])
 
     def diffuse_activation(self):
+        '''
+        Allows activation to diffusion along H matrix
+        '''
         projection_weights = np.exp(self.H) * self.trace_expectations * self.trace_excitations
         projection_probabilities = projection_weights * (1/(projection_weights @ np.ones((np.shape(projection_weights)[1],1)))) #divides each transition weight by the sum of transition weights in its row
         self.trace_activations = self.trace_activations @ projection_probabilities
 
     def predict(self):
+        '''
+        sets new expectation states
+        '''
         simulation_weights = np.exp(self.simulation_determinism * self.C)
         simulation_probabilities = simulation_weights * (1/(simulation_weights @ np.ones((np.shape(simulation_weights)[1],1)))) #divides each transition weight by the sum of transition weights in its row
         self.trace_expectations = self.trace_activations @ simulation_probabilities
