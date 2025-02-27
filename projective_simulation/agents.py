@@ -27,7 +27,7 @@ class Abstract_Agent(ABC):
 
         self.percept_processor = percept_processor
         if percept_processor is not None:
-            assert hasattr(percept_processor, "preproccess")
+            assert hasattr(percept_processor, "get_percept")
 
         self.action_processor = action_processor
         if action_processor is not None:
@@ -96,58 +96,46 @@ class Basic_PSAgent(Abstract_Agent):
 # %% ../nbs/lib_nbs/03_agents.ipynb 8
 class Situated_Agent(Abstract_Agent):
     def __init__(self, 
-                 reflex_ECM = None, #if an ECM object is not given, a number of actions must be given with which to create one
-                 episode_ECM = None, #if an ECM object is not given, a memory capacity must be given. This will be used to creat a new ECM
+                 reflexes = None, #if an ECM object is not given, a number of actions must be given with which to create one
+                 ECM = None, #if an ECM object is not given, a memory capacity must be given. This will be used to creat a new ECM
                  num_actions = None, # The number of available actions. If an ECM is not given, should be int
-                 memory_capacity:int = None,
-                 glow: float = 0.1, # The glow (or eta) parameter. Won't be used if ECM is given
-                 damp: float = 0., # The damping (or gamma) parameter. Won't be used if ECM is given
-                 reflex_softmax: float = 1., # The softmax (or beta) parameter. Won't be used if ECM is given
-                 PS_softmax: float = 1.,
-                 focus: float = 0,
-                 kappa: float = 1., #How strongly the agent discounts the similarity between two states per bit of mismatched sensory information when establishing a new belief state
-                 min_expectation: float = 0.01,
-                 deliberation_length: int = 1,
+                 N_traces:int = None,
+                 glow: float = 0.1, # The glow (or eta) parameter. Won't be used if reflexes is given
+                 damp: float = 0., # The damping (or gamma) parameter. Won't be used if reflexes is given
+                 reflex_softmax: float = 1., # The softmax (or beta) parameter. Won't be used if reflexes is given
                  t = 0,
                  percept_processor = None, 
                  action_processor = None
                 ):
-        assert isinstance(reflex_ECM, ECMs.Priming_ECM) or isinstance(num_actions, int)
-        if reflex_ECM is None:
-            self.reflex_ECM = ECMs.Priming_ECM(num_actions, glow, damp, reflex_softmax)
+        assert isinstance(reflexes, ECMs.Priming_ECM) or isinstance(num_actions, int)
+        if reflexes is None:
+            self.reflexes = ECMs.Priming_ECM(num_actions, glow, damp, reflex_softmax)
         else:
-            self.reflex_ECM = reflex_ECM
+            self.reflexes= reflexes
 
-        assert isinstance(episode_ECM, ECMs.Episodic_Memory) or isinstance(memory_capacity, int)
-        if episode_ECM is None:
-            self.episode_ECM = ECMs.Episodic_Memory(num_actions = self.reflex_ECM.num_actions, 
-                                               capacity = memory_capacity, 
-                                               softmax = PS_softmax,
-                                               focus = focus,
-                                               kappa = kappa,
-                                               epsilon = min_expectation,
-                                               deliberation_length = deliberation_length,
-                                               t = t
-                                              )
+        if ECM is None:
+            self.ECM = ECMs.Active_Inference_Memory_Network(num_actions = 2)
         else:
-            self.episode_ECM = episode_ECM
-        assert self.reflex_ECM.num_actions == self.episode_ECM.num_actions
-        self.num_actions = self.reflex_ECM.num_actions
+            self.ECM = ECM
+        assert self.reflexes.num_actions == self.ECM.num_actions
+        self.num_actions = self.reflexes.num_actions
 
-        super().__init__(ECM = self.episode_ECM, percept_processor = percept_processor)
+        super().__init__(ECM = self.ECM, percept_processor = percept_processor)
 
         if self.percept_processor is None:
             self.percept_processor = preprocessors.action_factorizor(num_actions = self.num_actions)
 
-    def get_action(self, observation):
+        self.surprise = None
+
+    def get_action(self, sensory_state):
         '''
         runs the SiPS agent preprocessor and deliberation. Observation should be a list or int.
         '''
-        action = self.reflex_ECM.deliberate(str(observation))
-        percept = self.percept_processor.get_percept(observation, action)
-        self.reflex_ECM.action_primes = self.episode_ECM.deliberate(percept) #runs predictions, priming actions for next step.
+        action = self.reflexes.deliberate(str(sensory_state))
+        percept = self.percept_processor.get_percept(sensory_state, action)
+        self.reflexes.action_primes = self.ECM.deliberate(percept) #runs predictions, priming actions for next step.
         return(action)
 
     def update(self):
-        reward = np.nanmean(self.episode_ECM.valences) - self.episode_ECM.surprise
-        self.ECM.learn(reward)
+        reward = np.nanmean(self.ECM.valences) - self.surprise
+        self.reflexes.learn(reward)
