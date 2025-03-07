@@ -365,7 +365,7 @@ class Bayesian_Memory_Network(Abstract_ECM):
         self.diffuse_activation()
         self.predict()
         self.t = (self.t + 1) % self.N_traces
-        return self.percept_expectations[0:self.num_actions] #return action priming
+        return [] #return action priming
 
     def add_percept(self):
         '''
