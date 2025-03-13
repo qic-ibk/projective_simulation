@@ -40,8 +40,8 @@ website:
         href: index.ipynb
       - section: Documentation
         contents:
-            - lib_nbs/00_utils.ipynb
-            - lib_nbs/01_basic_PS.ipynb
+            - lib_nbs/03_agents.ipynb
+            - lib_nbs/04_ECMs.ipynb
       - section: Tutorials
         contents:
-            - tutorials/tutorial_basic_PS.ipynb
+            - tutorials/02_example_tutorial.ipynb
