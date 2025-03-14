@@ -3,68 +3,76 @@
 # %% auto 0
 __all__ = ['Abstract_ECM', 'Two_Layer', 'Priming_ECM', 'Episodic_Memory']
 
-# %% ../nbs/lib_nbs/04_ECMs.ipynb 2
-import projective_simulation.methods.transforms as transforms
-import numpy as np
-
-from abc import ABC, abstractmethod
-
 # %% ../nbs/lib_nbs/04_ECMs.ipynb 4
-class Abstract_ECM(ABC):
-    """A minimal ECM, every agent should be Derived from this class. Primarily serves to enforce that all ECMs have the "ECM" class
+from .lib_helpers import CustomABCMeta
+from abc import abstractmethod
 
-    Examples:
-    >>> pass
+
+class Abstract_ECM(metaclass = CustomABCMeta):
+    """
+    Abstract agent class any episodic and compositional memory (ECM) should be derived from. Asserts that the necessary methods are implemented.
     """
 
-    def __init__(self, num_actions: int):
-        """
-        Args:
-            ECM: The ECM Object to use
-            percept_processor: An optional object for transforming observations prior to passing to ECM as a percept. Must have method "preprocess"
-            action_processor: An optional object for transforming actions prior to passing to Environment as an actuator state. Must have method "postprocess"            
-        """
-        raise NotImplementedError
+    def __init__(self):
+        '''
+        No restrictions on the constructor, as the ECM can be anything that has a deliberate module.
+        '''
+        pass
 
     @abstractmethod
-    def deliberate(self, percept: str):
+    def deliberate(self,):
         """
-        Args:
-            percept: A string corresponding to an existing or new (will be added) key in the ECM percept dictionary
+        Performs a random walk through the ECM. Typically, this implies receiving an input percept and returning an action.
         """
-        raise NotImplementedError
+        pass
 
-# %% ../nbs/lib_nbs/04_ECMs.ipynb 7
+# %% ../nbs/lib_nbs/04_ECMs.ipynb 8
+import numpy as np
+from .methods.transforms import _softmax
+
 class Two_Layer(Abstract_ECM):
     def __init__(self, 
-                 num_actions: int, # The number of available actions.
-                 glow: float, # The glow (or eta) parameter. 
-                 damp: float, # The damping (or gamma) parameter. 
-                 softmax: float # The softmax (or beta) parameter.
+                 # The number of available actions.
+                 num_actions: int, 
+                 # The glow (or eta) parameter. 
+                 glow: float, 
+                 # The damping (or gamma) parameter. 
+                 damp: float,
+                 # If 'greedy', uses a greedy policy that samples the most action based on the h-matrix. 
+                 # If 'softmax', uses a softmax policy that samples an action based on the h-matrix and a temperature parameter (encoded in policy_parameters).
+                 # If object, uses this object to sample action. Input must be h_values corresponding to current percept + arbitrary policy_parameters.
+                 policy: str = 'greedy',                 
+                 # The parameters of the policy.
+                 policy_parameters: dict = None
                 ):
 
         """
-        Simple, 2-layered ECM. We initialize an h-matrix with a single row of `num_actions` 
-        entries corresponding to a dummy percept clip being connected to all possible actions with h-values of all 1. We 
-        initialize a g-matrix with a single row of `num_actions` entries with all 0s corresponding to the *glow* values 
-        of percept-action transitions.
+        Two layer ECM. First layer, encoding the percepts observed in an environment, is initially empty (e.g. self.num_percepts = 0). As percepts
+        are observed, they are added to the ECM and to the percept dictionary self.percepts. 
+        The second layer, encoding the actions, has size self.num_actions.
+        In practice, the ECM graph is never created. Instead, it is defined indirectly by the h-matrix and g-matrix. 
+        Both have size (self.num_percepts, self.num_actions). 
+        The input policy (greedy, softmax or other) is used to sample actions based on the h-matrix.
 
-        Percepts must be created from new observations with a preprocessor, e.g. add_percepts
-                      
-        NOTE: This simple version misses some features such as clip deletion, emotion tags or generalization mechanisms.
+        For an end-to-end example of how to use this class, see the tutorial notebook on Basic PS agent.
         
         """
 
         self.num_actions = num_actions
         self.glow = glow
         self.damp = damp
-        self.softmax = softmax
+
+        self.policy = policy
+        self.policy_parameters = policy_parameters
+        
+        # Initialize ECM structures
+
         #int: current number of percepts.
         self.num_percepts = 0
         #np.ndarray: h-matrix with current h-values. Defaults to all 1.
-        self.hmatrix = np.ones([1,self.num_actions])
+        self.hmatrix = np.ones([0,self.num_actions])
         #np.ndarray: g-matrix with current glow values. Defaults to all 0.
-        self.gmatrix = np.zeros([1,self.num_actions])
+        self.gmatrix = np.zeros([0,self.num_actions])
         #dict: Dictionary of percepts as {"percept": index}
         self.percepts = {}
 
@@ -75,19 +83,33 @@ class Two_Layer(Abstract_ECM):
         Then, an action is selected as a function of the percept and the h-values of edges connected to that percept
         Finally, the g-matrix is updated based on the realized percept-action pair.
         """
-        #Add percept to ECM if not already present
+
+        # Add percept to ECM if not already present
         self.add_percept(percept)
-        #Perform Random Walk
-        # get index from dictionary entry
+        # Get index from dictionary entry
         percept_index = self.percepts[percept]
-        # get h-values
+        # Get h-values
         h_values = self.hmatrix[percept_index]
-        # get probabilities from h-values through a softmax function
-        prob = transforms._softmax(self.softmax, h_values)
-        # get action
-        action = np.random.choice(range(self.num_actions), p=prob)        
-        #pdate g-matrix
+
+        # Perform Random Walk through the ECM based on h_values and current policy
+        if self.policy == 'greedy': 
+            # Sample greedly the action with the highest h-value
+            h_values = self.hmatrix[percept_index]
+            action = h_values.argmax()   
+
+        elif self.policy == 'softmax':
+            # Get probabilities from h-values through a softmax function
+            prob = _softmax(self.policy_parameters, h_values)
+            # Sample action based on probabilities
+            action = np.random.choice(range(self.num_actions), p=prob) 
+
+        else:
+            # This considers a custom policy
+            action = self.policy(h_values = h_values, **self.policy_parameters)
+
+        # Update g-matrix
         self.gmatrix[int(percept_index),int(action)] = 1.
+
         return action
 
     def add_percept(self, percept):
@@ -109,7 +131,7 @@ class Two_Layer(Abstract_ECM):
 
     def learn(self, reward):
         """
-        Given a reward, updates h-matrix. Updates g-matrix with glow.
+        Given a reward, updates h-matrix and g-matrix
         """
         # damping h-matrix
         self.hmatrix = self.hmatrix - self.damp*(self.hmatrix-1.)
@@ -118,7 +140,7 @@ class Two_Layer(Abstract_ECM):
         # update g-matrix
         self.gmatrix = (1-self.glow)*self.gmatrix
 
-# %% ../nbs/lib_nbs/04_ECMs.ipynb 9
+# %% ../nbs/lib_nbs/04_ECMs.ipynb 11
 class Priming_ECM(Two_Layer):
     '''
     This sub-class of the Two-Layer ECM adds a variable for action priming.
@@ -160,7 +182,7 @@ class Priming_ECM(Two_Layer):
         self.gmatrix[int(percept_index),int(action)] = 1.
         return action
 
-# %% ../nbs/lib_nbs/04_ECMs.ipynb 13
+# %% ../nbs/lib_nbs/04_ECMs.ipynb 16
 class Episodic_Memory(Abstract_ECM):
     def __init__(self,
                  num_actions: int, # the number of perceptual representations available to the agent which, when excited, have an effect on the agent's environment. Action representations are primed differently than sensory representations and do not affect surprise

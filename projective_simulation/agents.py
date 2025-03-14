@@ -9,7 +9,7 @@ from abc import abstractmethod
 
 class Abstract_Agent(metaclass = CustomABCMeta):
     """
-    A minimal class every agent should fullfill, every agent should be Derived from this class
+    Abstract agent class any PS agent should be derived from. Asserts that the necessary methods are implemented.
     """
 
     def __init__(self, 
@@ -30,15 +30,18 @@ class Abstract_Agent(metaclass = CustomABCMeta):
 
     @abstractmethod
     def update(self):
+        ''' Updates the internal structure of the agent, typically by updating its ECM.'''
         pass
     
     @abstractmethod
     def get_action(self):
+        ''' Returns the action to be taken by the agent. Typically, this would involve getting a state from the environment, 
+        passing it through the percept processor, passing it to the ECM, and then passing the output through the action processor if needed.'''
         pass
     
     
 
-# %% ../nbs/lib_nbs/03_agents.ipynb 8
+# %% ../nbs/lib_nbs/03_agents.ipynb 7
 class Basic_Agent(Abstract_Agent):
     def __init__(self, 
                  ECM : object, #if an ECM object is not given, num_actions must an integer
@@ -85,7 +88,7 @@ class Basic_Agent(Abstract_Agent):
         """
         self.ECM.learn(reward)
 
-# %% ../nbs/lib_nbs/03_agents.ipynb 13
+# %% ../nbs/lib_nbs/03_agents.ipynb 12
 from .ECMs import Two_Layer
 
 class Basic_2Layer_Agent(Basic_Agent):
