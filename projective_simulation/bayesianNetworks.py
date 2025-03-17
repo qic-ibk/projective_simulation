@@ -129,7 +129,17 @@ class Bayesian_Memory(Bayesian_Network):
 
 # %% ../nbs/lib_nbs/06_Bayesian_Networks.ipynb 4
 class Active_Inference_Memory(Bayesian_Memory):
-    def __init__(self, num_sensory_elements, num_action_elements, num_m_nodes, W_matrix=None, C_matrix=None, timer=0, sensory_evidence_prior = 1, continuity_prior = 0.95):
+    def __init__(self, 
+                 num_sensory_elements,
+                 num_action_elements, 
+                 num_m_nodes,
+                 intrinsic_expectations = None,
+                 W_matrix=None, 
+                 C_matrix=None,
+                 epsilon = 0.0001,
+                 timer=0, 
+                 sensory_evidence_prior = 1, 
+                 continuity_prior = 0.95):
         """
         Initialize the Bayesian Memory network.
         :param num_sensory_elements: Number of sensory elements.
@@ -139,6 +149,12 @@ class Active_Inference_Memory(Bayesian_Memory):
         :param C_matrix: Memory transition matrix, defaults to zeros if None.
         :param timer: Integer tracking memory time index, defaults to 0.
         """
+        if intrinsic_expectations is None:
+            self.intrinsic_expectations = np.zeros(num_sensory_elements)
+        else:
+            if not len(intrinsic_expectations) == num_sensory_elements:
+                raise ValueError("Intrinsic Expectations must be a 1D vector with length equal to the number of sensory elements")
+            self.intrinsic_expectations = intrinsic_expectations
         #create W Matrix with rows for both plain sensory elements and active sensory elements
         #because other sensory variables are intialized from this matrix, this is all that is needed
         if W_matrix is None:
@@ -152,6 +168,8 @@ class Active_Inference_Memory(Bayesian_Memory):
 
         #create a vector for memory valences, to which system surprise is encoded
         self.memory_valences = np.full(num_m_nodes, fill_value = np.nan)
+
+        self.epsilon = epsilon
 
     def encode_memory(self):
         """Modify W_matrix, C_matrix, and memory valences to encode sensory input into memory."""
@@ -174,7 +192,8 @@ class Active_Inference_Memory(Bayesian_Memory):
         adjusted_weights = np.power(priming[:,np.newaxis], self.action_encoder) * self.W_matrix.T #multiplies weights to active sensory elements by memory trace suprise advantage (and weight to regular sensory elements by 1)
         self.sensory_expectation = np.dot(self.m_expectation, adjusted_weights)
         #adjust expectation based on intrinsic expectations
-        self.sensory_expectation = np.array([self.sensory_expectation[i] if self.action_encoder[i] == 1 else transforms._shifted_exp(self.sensory_expectation[i], k = 0) for i in range(len(self.sensory_expectation))])
+        #note that this code depends on all plain sensory elements preceding all action representations in the action encoder 
+        self.sensory_expectation = np.array([self.sensory_expectation[i] if self.action_encoder[i] == 1 else transforms._shifted_exp(self.sensory_expectation[i], k = self.intrinsic_expectations[i], epsilon = self.epsilon) for i in range(len(self.sensory_expectation))])
 
     def get_surprise(self):
         """Compute the total surprise of the network."""
