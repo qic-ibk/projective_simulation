@@ -53,7 +53,8 @@ def simulation_boxplot_summary(data,
                                param2_values, 
                                title, 
                                ylabel, 
-                               parameter_names = ['Paramter 1', 'Parameter 2']):
+                               parameter_names = ['Paramter 1', 'Parameter 2'],
+                              legend_loc = 2):
     '''
     data: 3D array, with simulation results. First two dimensions give value of a simulation parameter, third dimension gives the simulation number.
     '''
@@ -81,7 +82,7 @@ def simulation_boxplot_summary(data,
     
     # Create legend
     legend_patches = [plt.Line2D([0], [0], color=colors[b], lw=4, label=f'{parameter_names[1]}={param2_values[b]}') for b in range(B)]
-    plt.legend(handles=legend_patches, loc = 2)
+    plt.legend(handles=legend_patches, loc = legend_loc)
     plt.title(title)
     plt.ylabel(ylabel)
     plt.xlabel(parameter_names[0])
