@@ -96,13 +96,14 @@ class Basic_2Layer_Agent(Basic_Agent):
                  num_actions : int, # The number of available actions. If ECM = is not given, must be int
                  glow: float = 0.1, # The glow (or eta) parameter. Won't be used if ECM is given
                  damp: float = 0., # The damping (or gamma) parameter. Won't be used if ECM is given
-                 softmax: float = 0.1, # The softmax (or beta) parameter. Won't be used if ECM is given
+                 policy : str = 'greedy', # The policy to use. See ECMs.Two_Layer for details
+                 policy_parameters : dict = None, # The parameters for the policy. See ECMs.Two_Layer for details
                  percept_processor = None
                 ):
         """
         Basic PS agent with a two layer ECM. Percepts are added to the ECM as new obsevations are encountered.        
         """
 
-        self.ECM = Two_Layer(num_actions, glow, damp, softmax)
+        self.ECM = Two_Layer(num_actions, glow, damp, policy = policy, policy_parameters = policy_parameters)
         
         super().__init__(ECM = self.ECM, percept_processor = percept_processor)
