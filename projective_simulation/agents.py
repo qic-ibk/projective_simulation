@@ -4,7 +4,7 @@
 __all__ = ['Abstract_Agent', 'Basic_Agent', 'Basic_2Layer_Agent']
 
 # %% ../nbs/lib_nbs/01_agents.ipynb 4
-from .lib_helpers import CustomABCMeta
+from .methods.lib_helpers import CustomABCMeta
 from abc import abstractmethod
 
 class Abstract_Agent(metaclass = CustomABCMeta):
@@ -34,7 +34,7 @@ class Abstract_Agent(metaclass = CustomABCMeta):
         pass
     
     @abstractmethod
-    def get_action(self):
+    def deliberate(self):
         ''' Returns the action to be taken by the agent. Typically, this would involve getting a state from the environment, 
         passing it through the percept processor, passing it to the ECM, and then passing the output through the action processor if needed.'''
         pass
@@ -43,6 +43,7 @@ class Abstract_Agent(metaclass = CustomABCMeta):
 
 # %% ../nbs/lib_nbs/01_agents.ipynb 7
 class Basic_Agent(Abstract_Agent):
+    
     def __init__(self, 
                  ECM : object, #if an ECM object is not given, num_actions must an integer
                  percept_processor : object = None # Preprocessor object for transforming observations prior to passing to ECM as a percept. Must have method "preprocess"
@@ -53,9 +54,6 @@ class Basic_Agent(Abstract_Agent):
         """
         self.ECM = ECM
 
-        assert hasattr(self.ECM, "deliberate")
-        assert hasattr(self.ECM, "learn")
-
         if percept_processor is not None:
             self.percept_processor = percept_processor
             assert hasattr(self.percept_processor, "preprocess")    
@@ -65,7 +63,7 @@ class Basic_Agent(Abstract_Agent):
         super().__init__(ECM = self.ECM, percept_processor = percept_processor)  
         
         
-    def get_action(self, 
+    def deliberate(self, 
                 observation: object # Data object passed from the environment/sensors
                )-> int : # Action to be performed.
         """
@@ -76,7 +74,7 @@ class Basic_Agent(Abstract_Agent):
         else:
             percept = observation
 
-        action = self.ECM.deliberate(percept)
+        action = self.ECM.sample(percept)
 
         return action
 
@@ -104,6 +102,10 @@ class Basic_2Layer_Agent(Basic_Agent):
         Basic PS agent with a two layer ECM. Percepts are added to the ECM as new obsevations are encountered.        
         """
 
-        self.ECM = Two_Layer(num_actions, glow, damp, policy = policy, policy_parameters = policy_parameters)
+        self.ECM = Two_Layer(num_actions = num_actions, 
+                            g_damp = glow,
+                            h_damp =  damp,
+                            policy = policy, 
+                            policy_parameters = policy_parameters)
         
         super().__init__(ECM = self.ECM, percept_processor = percept_processor)
