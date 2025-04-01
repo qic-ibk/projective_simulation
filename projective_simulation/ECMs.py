@@ -235,8 +235,7 @@ class Bayesian_Network(Abstract_ECM):
             raise ValueError("C_matrix must have the same number of columns and rows (m_nodes)")
         self.C_matrix = C_matrix
 
-        if data_log:
-            self.surprise_data = np.empty(0)
+        self.surprise_data = [] if data_log else None
 
         # Initialize sensory and m-level excitations as empty arrays
         self.sensory_excitation = np.empty(self.num_sensory_elements)
@@ -312,10 +311,10 @@ class Bayesian_Network(Abstract_ECM):
     def sample(self, percept) -> np.ndarray:
         '''given a percept, updates network states and returns a vector of sensory expectations'''
         self.excite_network(percept)
-        if data_log:
-            self.surprise_data = np.append(self.surprise_data, self.get_surprise(), axis = 0)
+        if not self.surprise_data is None:
+            self.surprise_data = self.surprise_data + [self.get_surprise()]
         self.activate()
         self.set_expectations()
 
         # Return the index of the maximum activated node (greedy policy)
-        return self.sensory_expecatations
+        return self.sensory_expectation

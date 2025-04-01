@@ -103,5 +103,7 @@ d = { 'settings': { 'branch': 'master',
                                                                                                                           'projective_simulation/methods/preprocessors.py')},
             'projective_simulation.methods.transforms': { 'projective_simulation.methods.transforms._logistic': ( 'lib_nbs/methods/transforms.html#_logistic',
                                                                                                                   'projective_simulation/methods/transforms.py'),
+                                                          'projective_simulation.methods.transforms._shifted_exponent': ( 'lib_nbs/methods/transforms.html#_shifted_exponent',
+                                                                                                                          'projective_simulation/methods/transforms.py'),
                                                           'projective_simulation.methods.transforms._softmax': ( 'lib_nbs/methods/transforms.html#_softmax',
                                                                                                                  'projective_simulation/methods/transforms.py')}}}
