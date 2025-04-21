@@ -22,5 +22,5 @@ def _softmax(beta, x):
 def _logistic(x, L:float = 1,k:float = 1,x_shift = 0,y_shift:float = 0):
     return L/(1 + np.exp(-k*(x-x_shift))) + y_shift
 
-def _shifted_exponent(x, k, epsilon = 0.0001):
+def _exponentiated_shift(x, k, epsilon = 0.0001):
     return (x + epsilon) ** (np.exp(-k)) / ((1 + 2*epsilon) ** (np.exp(-k)))
