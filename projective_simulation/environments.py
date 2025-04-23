@@ -44,7 +44,7 @@ class Cyclic_Env(Abstract_Env):
     An environment that cycles deterministically through a sequence of percepts that may be passed to an agent
     """
     def __init__(self,
-                 percept_cycle: list,
+                 percept_cycle: np.ndarray,
                  initial_state: int = 0):
         self.percept_cycle = percept_cycle
         state = initial_state
@@ -57,7 +57,7 @@ class Cyclic_Env(Abstract_Env):
         self.state = (self.state + 1) % len(self.percept_cycle)
 
     def get_observation(self):
-        return self.percept_cycle[self.state]    
+        return self.percept_cycle[self.state:self.state+1] #slicing returns array instead of scalar    
 
 # %% ../nbs/lib_nbs/03_environments.ipynb 12
 class RLGL(Abstract_Env):

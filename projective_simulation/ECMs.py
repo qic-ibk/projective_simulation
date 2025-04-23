@@ -220,28 +220,28 @@ class Bayesian_Network(Abstract_ECM):
 
     def __init__(
         self,
-        Memory: np.ndarray,       # a list of np.arrays,
-        Transition_array: np.ndarray,       # Transition matrix between m-level nodes.
-        N_categories: list,          #number of states per percept category
+        memory: np.ndarray,       # a list of np.arrays,
+        transition_matrix: np.ndarray,       # Transition matrix between m-level nodes.
+        category_sizes: list,          #number of states per percept category
         m_expectation: np.ndarray = None,  # Optional initial expectation distribution over m-nodes.
         data_log: bool = False       #stores surprise after each network excitation in a list
     ):
         super().__init__()
-        if not sum(N_categories) == np.shape(Memory)[0]:
-            raise ValueError("Memory must have a number of rows equal to the total number of percept category states")
-        self.N_categories = N_categories
-        self.num_m_nodes = np.shape(Memory)[1]              
-        self.Memory = Memory
-        if not np.shape(Memory)[1] == np.shape(Transition_array)[1]:
-            raise ValueError("Memory and Transition must have the same number of columns (m_nodes)")
-        if not np.shape(Transition_array)[0] == np.shape(Transition_array)[1]:
+        if not sum(category_sizes) == np.shape(memory)[0]:
+            raise ValueError("memory must have a number of rows equal to the total number of percept category states")
+        self.category_sizes = category_sizes
+        self.num_m_nodes = np.shape(memory)[1]              
+        self.memory = memory
+        if not np.shape(memory)[1] == np.shape(transition_matrix)[1]:
+            raise ValueError("memory and Transition must have the same number of columns (m_nodes)")
+        if not np.shape(transition_matrix)[0] == np.shape(transition_matrix)[1]:
             raise ValueError("Transition must have the same number of columns and rows (m_nodes)")
-        self.Transition_array = Transition_array
+        self.transition_matrix = transition_matrix
 
         self.surprise_data = [] if data_log else None
 
         # Initialize sensory and m-level excitations as empty arrays
-        self.percept = np.empty(len(self.N_categories))
+        self.percept = np.empty(len(self.category_sizes))
         self.m_excitation = np.empty(self.num_m_nodes)
 
         # Set the initial expectation to uniform if none is provided
@@ -251,10 +251,10 @@ class Bayesian_Network(Abstract_ECM):
             self.m_expectation = m_expectation
 
         # Compute initial sensory expectation as a weighted sum over W_matrix
-        self.sensory_expectation = np.dot(self.m_expectation, self.Memory.T)
+        self.sensory_expectation = np.dot(self.m_expectation, self.memory.T)
 
         # Placeholder for current m-node activation vector
-        self.m_activation = np.zeros(self.num_m_nodes)
+        self.m_activation = np.full(self.num_m_nodes, fill_value = 1/self.num_m_nodes)
 
     def excite_network(
         self,
@@ -262,17 +262,17 @@ class Bayesian_Network(Abstract_ECM):
     ):
         """Sets the sensory excitation equal to the percept vector and updates m_excitation accordingly."""
         # Check input shape
-        if percept.shape[0] != len(self.N_categories):
+        if percept.shape[0] != len(self.category_sizes):
             raise ValueError("Percept vector size does not match the number of perceptual categories.")
-        for i in range(len(self.N_categories)):
-            if not percept[i] in range(self.N_categories[i]):
+        for i in range(len(self.category_sizes)):
+            if not percept[i] in range(self.category_sizes[i]):
                 raise ValueError("The state of each percept category should be {0,...,N_i - 1}, where N_i is the number of states for that percept category")
                 #using 0 for first state helps with indexing memory array
         self.percept = percept
 
         # compute each m_excitation as the product of each perceptual categories likelihood given that memory,
         active_percept_indices = self.get_active_percept_indices()
-        category_likelihoods = self.Memory[active_percept_indices,:]
+        category_likelihoods = self.memory[active_percept_indices,:]
         self.m_excitation = np.prod(category_likelihoods, axis=0) #likelihood of percept given event memory by taking product of values in each column
 
     def activate(self):
@@ -294,15 +294,15 @@ class Bayesian_Network(Abstract_ECM):
         """Set m_expectation and sensory_expectation based on activation and weight matrices."""
         
         # Normalize the Transition_matrix rows to form proper probability distributions (commented out because current encoding rules should enforce normalization, and this code is problematic.)
-        row_sums = self.Transition_array.sum(axis=1, keepdims=True)
-        # zero_matrix = np.zeros_like(self.Transition_array) #initilize with zeros
-        # normalized_T_matrix = np.divide(self.Transition_array, row_sums, out=zero_matrix, where=row_sums != 0) #where row_sums is 0, no transition will be made and expectation will be lost
+        row_sums = self.transition_matrix.sum(axis=1, keepdims=True)
+        # zero_matrix = np.zeros_like(self.transition_matrix) #initilize with zeros
+        # normalized_T_matrix = np.divide(self.transition_matrix, row_sums, out=zero_matrix, where=row_sums != 0) #where row_sums is 0, no transition will be made and expectation will be lost
         assert(row_sum == 0 or row_sum == 1 for row_sum in row_sums)
         # Update m_expectation using the transition matrix and current activation
-        self.m_expectation = np.dot(self.m_activation, self.Transition_array)
+        self.m_expectation = np.dot(self.m_activation, self.transition_matrix)
 
         # Update sensory_expectation using a transformed dot product with W_matrix
-        self.sensory_expectation = np.dot(self.m_expectation, self.Memory.T)
+        self.sensory_expectation = np.dot(self.m_expectation, self.memory.T)
 
     def get_surprise(self) -> float:
         """Compute the total surprise of the network."""
@@ -314,7 +314,7 @@ class Bayesian_Network(Abstract_ECM):
         return np.sum(surprise_values)
 
     def get_active_percept_indices(self):
-        x = self.percept.astype(int) + (np.cumsum([0] + self.N_categories[:-1])).astype(int) #add category state to category start index of Memory
+        x = self.percept.astype(int) + (np.cumsum([0] + self.category_sizes[:-1])).astype(int) #add category state to category start index of memory
         return x.tolist()
         
     def sample(self, percept) -> np.ndarray:
@@ -333,57 +333,94 @@ import numpy as np
 
 class Bayesian_Memory(Bayesian_Network):
     """
-    BayesianMemory is a memory-augmented extension of the BayesianNetwork.
+    Bayesian_Memory is a memory-augmented extension of the Bayesian_Network.
     It supports dynamic modification of internal weights to encode temporal traces.
     """
     def __init__(
         self,
-        N_categories: list,        # Number of sensory input elements.
-        num_m_nodes: int,                 # Number of memory nodes.
-        Memory: np.ndarray = None,     # Optional sensory-to-memory weight matrix.
-        m_expectation: np.ndarray = None, #Optional 1d array of prior expectations on memories
-        Transition_array: np.ndarray = None,     # Optional memory transition matrix.
-        timer: int = 0,                  # Starting memory time index.
-        epistemic_uncertainty: float = 0,   # Discounts sensory evidence in state estimation.
-        belief_uncertainty: float = 0,      # Prior for trace continuity.
+        category_sizes: list,                    # Number of sensory input elements.
+        num_m_nodes: int,                        # Number of memory nodes.
+        memory: np.ndarray = None,               # Optional sensory-to-memory weight matrix.
+        m_expectation: np.ndarray = None,        # Optional 1d array of prior expectations on memories
+        transition_matrix: np.ndarray = None,     # Optional memory transition matrix.
+        timer: int = 0,                          # Starting memory time index.
         data_log = False,
-        sensory_epsilon: float = 0.0001, #shifts sensory expectations to avoid absolutes. Should be very small
     ):
         # Default to informationless percept element probabilities if none provided
-        if Memory is None:
-            uniform_probabilities = np.concatenate([np.full(category_size, 1/category_size) for category_size in N_categories])
-            Memory = uniform_probabilities[:, np.newaxis] * np.ones(num_m_nodes, dtype=uniform_probabilities.dtype) #set each memory node (columns) to uniform probabilities
+        if memory is None:
+            uniform_probabilities = np.concatenate([np.full(category_size, fill_value = 1/category_size) for category_size in category_sizes])
+            memory = uniform_probabilities[:, np.newaxis] * np.ones(num_m_nodes, dtype=uniform_probabilities.dtype) #set each memory node (columns) to uniform probabilities
 
         # Default to uniform transitions if none provided
-        if Transition_array is None:
-            Transition_array = np.zeros((num_m_nodes, num_m_nodes))
-
-        super().__init__(Memory = Memory, Transition_array = Transition_array, N_categories = N_categories, m_expectation = m_expectation, data_log = data_log)
-
+        if transition_matrix is None:
+            transition_matrix = np.zeros((num_m_nodes, num_m_nodes))
+            
+        super().__init__(memory = memory, transition_matrix = transition_matrix, category_sizes = category_sizes, m_expectation = m_expectation, data_log = data_log)
         self.timer = timer
-        self.epistemic_uncertainty = epistemic_uncertainty
-        self.belief_uncertainty = belief_uncertainty
-        self.bias = np.zeros(self.num_m_nodes) #will be filled by belief uncertainty as memories are encoded
-        self.sensory_epsilon = sensory_epsilon
+        if m_expectation is None:
+            #overwrite default from super() so that expectation is set on enencoded trace that precedes the one given by initial timer value
+            self.m_expectation = np.zeros(self.num_m_nodes)
+            self.m_expectation[timer-1] = 1
+            
+        self.enforce_structure()
+        
+
+    def enforce_structure(self):
+        """
+        runs checks to ensure that all variables in the Bayesian_Memory are properly defined
+        """
+        
+        #enforce probability distribution in each percept category of encoded memories and predictions
+        category_start_index = 0
+        for i in range(len(self.category_sizes)):
+            category_sums_memory = np.sum(self.memory[range(category_start_index, category_start_index + self.category_sizes[i]),:], axis = 0)
+            if not np.all(np.abs(category_sums_memory - 1) < 1e-9): #allows for floating-point precision
+                raise ValueError("""Each memory trace must encode a probability distribution over each category. 
+                When the Memory Network's internal timer was set to """ + str(self.timer) + """
+                at least one column in 'memory' did not contain values that sum to 1 for category """ + str(i))
+
+            category_sum_prediction = np.sum(self.sensory_expectation[range(category_start_index, category_start_index + self.category_sizes[i])])
+            if not np.abs(category_sum_prediction - 1) < 1e-9:
+                raise ValueError("""Expecations for each percept category must be a probability distribution. 
+                When the Memory Network's internal timer was set to """ + str(self.timer) + """
+                sensory_expectation did not sum to 1 for category """ + str(i))
+                                                                      
+            category_start_index += self.category_sizes[i]
+
+        #enforce probability structure in activation, expectation, and excitation
+        if not np.abs(np.sum(self.m_activation) - 1) < 1e-9:
+            raise ValueError("""memory trace activation must be a probability distiribution.
+            When the Memory Network's internal timer was set to """ + str(self.timer) + """
+            m_activation did not sum to 1""")
+
+        if not np.abs(np.sum(self.m_expectation) -1 ) < 1e-9:
+            raise ValueError("""memory trace expectation must be a probability distiribution.
+            When the Memory Network's internal timer was set to """ + str(self.timer) + """
+            m_expectation did not sum to 1""")
+
+        if not np.all(self.m_excitation >= 0) and not np.all(self.m_excitation <= 1):
+            raise ValueError("""memory trace excitation must be a probability.
+            When the Memory Network's internal timer was set to """ + str(self.timer) + """
+            at least one value of m_excitation was not between 0 and 1""")
+        
 
     def encode_memory(self):
         """
         Modify W_matrix and C_matrix to encode the current percept into memory.
         This sets the current memory trace's excitation weights and transition weights.
         """
-        # Encode current sensory excitation into Memory
+        # Encode current sensory excitation into memory
         
-        categorical_encoding = np.zeros(np.shape(self.Memory)[0]) #initialize with 0s
+        categorical_encoding = np.zeros(np.shape(self.memory)[0]) #initialize with 0s
         categorical_encoding[self.get_active_percept_indices()] = 1 #set active percept states to 1
-        self.Memory[:, self.timer] = categorical_encoding
+        self.memory[:, self.timer] = categorical_encoding
 
         # Set transition from previous trace to current trace
 
-        self.Transition_array[self.timer - 1, self.timer] = 1
+        self.transition_matrix[self.timer - 1, self.timer] = 1
 
         # Inhibit the excitation of the currently encoded trace
         self.m_excitation[self.timer] = 0
-        self.bias[self.timer] = self.belief_uncertainty
 
     def excite_network(
         self,
@@ -393,24 +430,26 @@ class Bayesian_Memory(Bayesian_Network):
         Similar to function of same name for Bayesian_Network, exponentiated shift is applied to sensory evidence weights.
         This adds uncertainty as a function of the sensory evidence prior
         """
-        if percept.shape[0] != len(self.N_categories):
+        #enforce percept structure
+        if percept.shape[0] != len(self.category_sizes):
             raise ValueError("Percept vector size does not match the number of perceptual categories.")
-        for i in range(len(self.N_categories)):
-            if not percept[i] in range(self.N_categories[i]):
-                raise ValueError("The state of each percept category should be {0,...,N_i - 1}, where N_i is the number of states for that percept category")
+        for i in range(len(self.category_sizes)):
+            if not percept[i] in range(self.category_sizes[i]):
+                raise ValueError("The state of each percept category should be in {0,...,N_i - 1}, where N_i is the number of states for that percept category")
                 #using 0 for first state helps with indexing memory array
+        
         self.percept = percept
 
         # compute each m_excitation as the product of each perceptual category's likelihood given that memory,
         active_percept_indices = self.get_active_percept_indices()
-        category_likelihoods = self.Memory[active_percept_indices,:]
-        uncertainty_adjusted_likelihoods = _exponentiated_shift(category_likelihoods, k = 0, epsilon = self.epistemic_uncertainty) #shift toward 0.5, proportional to epsilon (not exponentiated because k is 0)
-        self.m_excitation = np.prod(uncertainty_adjusted_likelihoods, axis=0) #likelihood of percept given event memory by taking product of values in each column
+        category_likelihoods = self.memory[active_percept_indices,:]
+        self.m_excitation = np.prod(category_likelihoods, axis=0) #likelihood of percept given event memory by taking product of values in each column
 
+    
     def activate(self):
-        """Sets m_activation based on m_excitation and m_expectation."""
+        """Sets m_activation based on m_excitation and m_expectation. Differs from Bayesian_Network only in how edge case of 0 activation is handled"""
         # Compute the unnormalized activation (Bayesian inference numerator)
-        numerator = self.m_excitation * self.m_expectation + self.bias
+        numerator = self.m_excitation * self.m_expectation
 
         # Normalize to ensure it sums to one (Bayesian posterior)
         denominator = np.sum(numerator)
@@ -418,18 +457,11 @@ class Bayesian_Memory(Bayesian_Network):
         if denominator != 0:
             self.m_activation = numerator / denominator
         else:
-            # Avoid division by zero if all values are 0
-            print("Warning: Activations sum to 0. This implies the agent believes it can not be in any known state and is likely to cause problems")
-            self.m_activation = np.zeros(self.num_m_nodes)
-    
-    def set_expectations(self):
-        """
-        Applies shifted exponential to sensory predictions, preventing 'absolute certainty'
-        """
-        super().set_expectations()
-        self.sensory_expectation = _exponentiated_shift(x = self.sensory_expectation, k = 0, epsilon = self.sensory_epsilon)
-        #Question of whether to let this be an edge case, or handle generally with the line above
-    
+            # if all values are 0, evenly divide activation across all encoded traces
+            encoded_traces_bool = self.transition_matrix.sum(axis=0) > 0 #true if there is a transition leading to trace (meaning it has been encoded)
+            num_encoded_traces = np.sum(encoded_traces_bool)
+            self.m_activation = np.where(encoded_traces_bool, 1/num_encoded_traces, 0) #inputs: condition, value if true, value if false
+          
     def sample(self, percept):
         self.excite_network(percept)
         if not self.surprise_data is None:
@@ -438,7 +470,10 @@ class Bayesian_Memory(Bayesian_Network):
         self.encode_memory()
         self.set_expectations()
 
+
         # Return the index of the maximum activated node (greedy policy)
         self.timer = (self.timer + 1) % self.num_m_nodes
+
+        self.enforce_structure()
         return self.sensory_expectation
     
