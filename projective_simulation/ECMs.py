@@ -245,10 +245,13 @@ class Bayesian_Network(Abstract_ECM):
         self.m_excitation = np.empty(self.num_m_nodes)
 
         # Set the initial expectation to uniform if none is provided
-        self.m_expectation = np.full(self.num_m_nodes, fill_value=1/self.num_m_nodes) if m_expectation is None else m_expectation
+        if m_expectation is None:
+            self.m_expectation = np.full(self.num_m_nodes, fill_value = 1/self.num_m_nodes)
+        else:
+            self.m_expectation = m_expectation
 
         # Compute initial sensory expectation as a weighted sum over W_matrix
-        self.sensory_expectation =   np.dot(self.m_expectation, self.Memory.T)
+        self.sensory_expectation = np.dot(self.m_expectation, self.Memory.T)
 
         # Placeholder for current m-node activation vector
         self.m_activation = np.zeros(self.num_m_nodes)
@@ -290,12 +293,13 @@ class Bayesian_Network(Abstract_ECM):
     def set_expectations(self):
         """Set m_expectation and sensory_expectation based on activation and weight matrices."""
         
-        # Normalize the Transition_matrix rows to form proper probability distributions
+        # Normalize the Transition_matrix rows to form proper probability distributions (commented out because current encoding rules should enforce normalization, and this code is problematic.)
         row_sums = self.Transition_array.sum(axis=1, keepdims=True)
-        normalized_T_matrix = np.divide(self.Transition_array, row_sums, where=row_sums != 0)
-
+        # zero_matrix = np.zeros_like(self.Transition_array) #initilize with zeros
+        # normalized_T_matrix = np.divide(self.Transition_array, row_sums, out=zero_matrix, where=row_sums != 0) #where row_sums is 0, no transition will be made and expectation will be lost
+        assert(row_sum == 0 or row_sum == 1 for row_sum in row_sums)
         # Update m_expectation using the transition matrix and current activation
-        self.m_expectation = np.dot(self.m_activation, normalized_T_matrix)
+        self.m_expectation = np.dot(self.m_activation, self.Transition_array)
 
         # Update sensory_expectation using a transformed dot product with W_matrix
         self.sensory_expectation = np.dot(self.m_expectation, self.Memory.T)
@@ -337,6 +341,7 @@ class Bayesian_Memory(Bayesian_Network):
         N_categories: list,        # Number of sensory input elements.
         num_m_nodes: int,                 # Number of memory nodes.
         Memory: np.ndarray = None,     # Optional sensory-to-memory weight matrix.
+        m_expectation: np.ndarray = None, #Optional 1d array of prior expectations on memories
         Transition_array: np.ndarray = None,     # Optional memory transition matrix.
         timer: int = 0,                  # Starting memory time index.
         epistemic_uncertainty: float = 0,   # Discounts sensory evidence in state estimation.
@@ -353,12 +358,12 @@ class Bayesian_Memory(Bayesian_Network):
         if Transition_array is None:
             Transition_array = np.zeros((num_m_nodes, num_m_nodes))
 
-        super().__init__(Memory = Memory, Transition_array = Transition_array, N_categories = N_categories, data_log = data_log)
+        super().__init__(Memory = Memory, Transition_array = Transition_array, N_categories = N_categories, m_expectation = m_expectation, data_log = data_log)
 
         self.timer = timer
         self.epistemic_uncertainty = epistemic_uncertainty
         self.belief_uncertainty = belief_uncertainty
-
+        self.bias = np.zeros(self.num_m_nodes) #will be filled by belief uncertainty as memories are encoded
         self.sensory_epsilon = sensory_epsilon
 
     def encode_memory(self):
@@ -373,11 +378,12 @@ class Bayesian_Memory(Bayesian_Network):
         self.Memory[:, self.timer] = categorical_encoding
 
         # Set transition from previous trace to current trace
-        if self.timer > 0:
-            self.Transition_array[self.timer - 1, self.timer] = 1
+
+        self.Transition_array[self.timer - 1, self.timer] = 1
 
         # Inhibit the excitation of the currently encoded trace
         self.m_excitation[self.timer] = 0
+        self.bias[self.timer] = self.belief_uncertainty
 
     def excite_network(
         self,
@@ -401,6 +407,21 @@ class Bayesian_Memory(Bayesian_Network):
         uncertainty_adjusted_likelihoods = _exponentiated_shift(category_likelihoods, k = 0, epsilon = self.epistemic_uncertainty) #shift toward 0.5, proportional to epsilon (not exponentiated because k is 0)
         self.m_excitation = np.prod(uncertainty_adjusted_likelihoods, axis=0) #likelihood of percept given event memory by taking product of values in each column
 
+    def activate(self):
+        """Sets m_activation based on m_excitation and m_expectation."""
+        # Compute the unnormalized activation (Bayesian inference numerator)
+        numerator = self.m_excitation * self.m_expectation + self.bias
+
+        # Normalize to ensure it sums to one (Bayesian posterior)
+        denominator = np.sum(numerator)
+
+        if denominator != 0:
+            self.m_activation = numerator / denominator
+        else:
+            # Avoid division by zero if all values are 0
+            print("Warning: Activations sum to 0. This implies the agent believes it can not be in any known state and is likely to cause problems")
+            self.m_activation = np.zeros(self.num_m_nodes)
+    
     def set_expectations(self):
         """
         Applies shifted exponential to sensory predictions, preventing 'absolute certainty'
@@ -413,8 +434,8 @@ class Bayesian_Memory(Bayesian_Network):
         self.excite_network(percept)
         if not self.surprise_data is None:
             self.surprise_data = self.surprise_data + [self.get_surprise()]
-        self.encode_memory()
         self.activate()
+        self.encode_memory()
         self.set_expectations()
 
         # Return the index of the maximum activated node (greedy policy)
