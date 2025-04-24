@@ -307,11 +307,12 @@ class Bayesian_Network(Abstract_ECM):
     def get_surprise(self) -> float:
         """Compute the total surprise of the network."""
         # Compute the surprise of each element using the binary cross-entropy formula
-        active_percept_indices = self.get_active_percept_indices()
-        surprise_values = -np.log2(self.sensory_expectation[active_percept_indices])
+        category_expectations = self.sensory_expectation[self.get_active_percept_indices()]
+        category_expectations[category_expectations < 0.000001] == 0.000001 #set maximum surprise to avoid taking log of zero
+        surprise_values = -np.log2(category_expectations)
 
-        # Return total surprise as the sum over all sensory elements
-        return np.sum(surprise_values)
+        # Return surprise for each percept category
+        return surprise_values
 
     def get_active_percept_indices(self):
         x = self.percept.astype(int) + (np.cumsum([0] + self.category_sizes[:-1])).astype(int) #add category state to category start index of memory
@@ -344,7 +345,8 @@ class Bayesian_Memory(Bayesian_Network):
         m_expectation: np.ndarray = None,        # Optional 1d array of prior expectations on memories
         transition_matrix: np.ndarray = None,     # Optional memory transition matrix.
         timer: int = 0,                          # Starting memory time index.
-        data_log = False,
+        data_record: list = [],                      # a list of variable names to log each time step. Accepts "all"
+        record_until: int = None                    # number of steps to prepare for data logging
     ):
         # Default to informationless percept element probabilities if none provided
         if memory is None:
@@ -361,9 +363,36 @@ class Bayesian_Memory(Bayesian_Network):
             #overwrite default from super() so that expectation is set on enencoded trace that precedes the one given by initial timer value
             self.m_expectation = np.zeros(self.num_m_nodes)
             self.m_expectation[timer-1] = 1
-            
-        self.enforce_structure()
+
+        #set up data record ~~~~~~~~
+        self.data = {"m_expectation": None, 
+                     "m_excitation": None, 
+                     "m_activation": None,
+                     "sensory_expectation": None, 
+                     "surprise": None}
         
+        self.data_timer = 0
+        
+        if "all" in data_record:
+            if len(data_record) > 1:
+                print("Warning, data_record contains 'all', additional entries will be ignored")
+            data_record = self.data.keys()
+
+        #add empty data set for each variable in data_log
+        for variable in data_record:
+            if variable not in self.data.keys():
+                print("Warning, " + str(variable) + " in data_record not a valid variable name and will be ignored")
+            elif variable in ["m_expectation", "m_excitation", "m_activation"]:
+                self.data[variable] = np.full((self.log_until, self.num_m_nodes), fill_value = -1) #fill value is outside allowable range for variables to indicate unfilled data
+            elif variable == "sensory_expectation":
+                self.data[variable] = np.full((self.log_until, np.sum(self.category_sizes)), fill_value = -1) #fill value is outside allowable range for variables to indicate unfilled data
+            elif variable == "surprise":
+                self.data[variable] = np.full((self.log_until, len(self.category_sizes)), fill_value = -1) #fill value is outside allowable range for variables to indicate unfilled data
+            else:
+                print("Warning, unexpected condition in data_record variables")    
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        self.enforce_structure()        
 
     def enforce_structure(self):
         """
@@ -402,6 +431,10 @@ class Bayesian_Memory(Bayesian_Network):
             raise ValueError("""memory trace excitation must be a probability.
             When the Memory Network's internal timer was set to """ + str(self.timer) + """
             at least one value of m_excitation was not between 0 and 1""")
+
+        if self.log_until is not None:
+            if self.data_timer == self.record_until + 1:
+                print("Warning, memory process has exceded steps pre-allocated for data-recording. Further variable states will not be stored")
         
 
     def encode_memory(self):
@@ -463,17 +496,36 @@ class Bayesian_Memory(Bayesian_Network):
             self.m_activation = np.where(encoded_traces_bool, 1/num_encoded_traces, 0) #inputs: condition, value if true, value if false
           
     def sample(self, percept):
+        #record m_expectation
+        if self.data_timer <= self.log_until and self.data["m_expecatation"] is not None:
+            self.data["m_expectation"][self.data_timer,:] = self.m_expectation
+
+        #get excitation and record
         self.excite_network(percept)
-        if not self.surprise_data is None:
-            self.surprise_data = self.surprise_data + [self.get_surprise()]
+        if self.data_timer <= self.log_until and self.data["m_excitation"] is not None:
+            self.data["m_excitation"][self.data_timer,:] = self.m_excitation
+
+        #record surprise
+        if self.data_timer <= self.log_until and self.data["surprise"] is not None:
+            self.data["surprise"][self.data_timer,:] = self.get_surprise()
+
+        #activate and record
         self.activate()
+        if self.data_timer <= self.log_until and self.data["m_activation"] is not None:
+            self.data["m_activation"][self.data_timer,:] = self.m_activation
+
+        #encode memory
         self.encode_memory()
+
+        #predict
         self.set_expectations()
 
-
-        # Return the index of the maximum activated node (greedy policy)
+        # Advance Memory network's internal timer
         self.timer = (self.timer + 1) % self.num_m_nodes
 
+        #Advance timer for data logging
+        self.data_timer += 1
+        
         self.enforce_structure()
         return self.sensory_expectation
     
