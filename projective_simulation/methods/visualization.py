@@ -70,7 +70,9 @@ def plot_heatmap(matrix,
                  ytick_labels=None,
                  ax=None,
                  vmin=None,
-                 vmax=None):
+                 vmax=None,
+                 label_scale=1.0
+                ):
     """
     Plots a heatmap of the given matrix using the intensity of a single color.
     """
@@ -89,9 +91,13 @@ def plot_heatmap(matrix,
     im = ax.imshow(matrix, cmap=plt.colormaps.get_cmap(color), 
                    aspect='auto', extent=extent, vmin=vmin, vmax=vmax)
 
-    ax.set_title(title)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
+    tick_fontsize = 10 * label_scale
+    label_fontsize = 12 * label_scale
+    title_fontsize = 14 * label_scale
+    
+    ax.set_title(title, fontsize=title_fontsize)
+    ax.set_xlabel(xlabel, fontsize=label_fontsize)
+    ax.set_ylabel(ylabel, fontsize=label_fontsize)
     ax.invert_yaxis()
 
     # Default xticks at centers
@@ -100,11 +106,11 @@ def plot_heatmap(matrix,
         ax.set_xticks(xticks + 0.5)
         if xtick_labels is None:
             xtick_labels = [str(i+1) for i in xticks]
-        ax.set_xticklabels(xtick_labels)
+        ax.set_xticklabels(xtick_labels, fontsize=tick_fontsize)
     else:
         ax.set_xticks(xticks)
         if xtick_labels is not None:
-            ax.set_xticklabels(xtick_labels)
+            ax.set_xticklabels(xtick_labels, fontsize=tick_fontsize)
 
     # Default yticks at centers
     if yticks is None:
@@ -112,11 +118,11 @@ def plot_heatmap(matrix,
         ax.set_yticks(yticks + 0.5)
         if ytick_labels is None:
             ytick_labels = [str(i+1) for i in yticks]
-        ax.set_yticklabels(ytick_labels)
+        ax.set_yticklabels(ytick_labels, fontsize=tick_fontsize)
     else:
         ax.set_yticks(yticks)
         if ytick_labels is not None:
-            ax.set_yticklabels(ytick_labels)
+            ax.set_yticklabels(ytick_labels, fontsize=tick_fontsize)
 
     plt.colorbar(im, ax=ax)
 
