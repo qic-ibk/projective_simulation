@@ -54,55 +54,77 @@ def simulation_boxplot_summary(data,
     plt.xticks(range(A), labels=[f"{param1_values[a]}" for a in range(A)])
 
 # %% ../../nbs/lib_nbs/methods/03_visualizations.ipynb 4
+import matplotlib.pyplot as plt
+import numpy as np
+
 def plot_heatmap(matrix, 
                  title="Expectation of Memory Traces", 
                  xlabel="Trace", 
                  ylabel="Time Step", 
                  color="Blues", 
-                 extent = None, 
-                 figsize = (8,6),
-                 xticks = None,
-                 xtick_labels = None,
-                 yticks = None,
-                 ytick_labels = None,
-                 ax = None,
-                 vmin = None,
-                 vmax = None
-                ):
+                 extent=None, 
+                 figsize=(8, 6),
+                 xticks=None,
+                 xtick_labels=None,
+                 yticks=None,
+                 ytick_labels=None,
+                 ax=None,
+                 vmin=None,
+                 vmax=None):
     """
     Plots a heatmap of the given matrix using the intensity of a single color.
-    
-    :param matrix: 2D numpy array to be visualized.
-    :param title: Title of the heatmap.
-    :param xlabel: Label for the x-axis.
-    :param ylabel: Label for the y-axis.
-    :param color: The base color for intensity visualization.
     """
     if ax is None:
-        plt.figure(figsize=figsize)
+        fig, ax = plt.subplots(figsize=figsize)
+        show = True
     else:
-        plt.sca(ax)  # Set current axis
+        show = False  # Don't show if plotting to existing axis
+
+    nrows, ncols = matrix.shape
+
+    # Set extent so each pixel spans [i, i+1] in axis coords
     if extent is None:
-        extent = [0,np.shape(matrix)[1],np.shape(matrix)[0], 0]
-    plt.imshow(matrix, cmap=plt.colormaps.get_cmap(color), aspect='auto', extent = extent, vmin = vmin, vmax = vmax)
-    plt.colorbar(label="Intensity")
-    plt.title(title)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    if not xticks is None:
+        extent = [0, ncols, nrows, 0]  # left, right, bottom, top
+
+    im = ax.imshow(matrix, cmap=plt.colormaps.get_cmap(color), 
+                   aspect='auto', extent=extent, vmin=vmin, vmax=vmax)
+
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.invert_yaxis()
+
+    # Default xticks at centers
+    if xticks is None:
+        xticks = np.arange(ncols)
+        ax.set_xticks(xticks + 0.5)
         if xtick_labels is None:
-            plt.xticks(xticks)
-        else:
-            plt.xticks(xticks, xtick_labels)
-    if not yticks is None:
+            xtick_labels = [str(i+1) for i in xticks]
+        ax.set_xticklabels(xtick_labels)
+    else:
+        ax.set_xticks(xticks)
+        if xtick_labels is not None:
+            ax.set_xticklabels(xtick_labels)
+
+    # Default yticks at centers
+    if yticks is None:
+        yticks = np.arange(nrows)
+        ax.set_yticks(yticks + 0.5)
         if ytick_labels is None:
-            plt.yticks(yticks)
-        else:
-            plt.yticks(yticks, ytick_labels)
-    if ax is None:
+            ytick_labels = [str(i+1) for i in yticks]
+        ax.set_yticklabels(ytick_labels)
+    else:
+        ax.set_yticks(yticks)
+        if ytick_labels is not None:
+            ax.set_yticklabels(ytick_labels)
+
+    plt.colorbar(im, ax=ax)
+
+    if show:
+        plt.tight_layout()
         plt.show()
 
-# %% ../../nbs/lib_nbs/methods/03_visualizations.ipynb 5
+# %% ../../nbs/lib_nbs/methods/03_visualizations.ipynb 6
 def visualize_time_step(t, observations, m_expectations, s_expectations, actions, surprise_data, H_matrices, glow_matrices, reinforcement_data):
     # Define number of panels and relative heights
     num_panels_col1 = 3
@@ -185,7 +207,7 @@ def visualize_time_step(t, observations, m_expectations, s_expectations, actions
     plt.tight_layout()
     plt.show()
 
-# %% ../../nbs/lib_nbs/methods/03_visualizations.ipynb 6
+# %% ../../nbs/lib_nbs/methods/03_visualizations.ipynb 7
 def plot_circular_network(colors: list, highlight_index: int, ax = None, figwidth = 4) -> None:
     """
     Plot a circular network where each node is colored according to the `colors` list,
