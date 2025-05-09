@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['standard_ps_upd', 'Abstract_ECM', 'Two_Layer', 'Priming_ECM', 'Bayesian_Network', 'Bayesian_Memory',
-           'Forgetful_Memory']
+           'Forgetful_Memory', 'Selectively_Forgetful_Memory']
 
 # %% ../nbs/lib_nbs/02_ECMs.ipynb 5
 def standard_ps_upd(reward, hmatrix, gmatrix, h_damp, g_damp):
@@ -467,9 +467,12 @@ class Bayesian_Memory(Bayesian_Network):
                 print("Warning, memory process has exceded steps pre-allocated for data-recording. Further variable states will not be stored")
         
     def sample(self, percept):
-        #record m_expectation
+        #record m_expectation and sensory expectation
         if self.data_timer < self.record_until and self.data["m_expectation"] is not None:
             self.data["m_expectation"][self.data_timer,:] = self.m_expectation
+
+        if self.data_timer < self.record_until and self.data["sensory_expectation"] is not None:
+            self.data["sensory_expectation"][self.data_timer,:] = self.sensory_expectation
 
         #get excitation and record
         self.excite_network(percept)
@@ -490,8 +493,6 @@ class Bayesian_Memory(Bayesian_Network):
 
         #predict
         self.set_expectations()
-        if self.data_timer < self.record_until and self.data["sensory_expectation"] is not None:
-            self.data["sensory_expectation"][self.data_timer,:] = self.sensory_expectation
 
         # Advance Memory network's internal timer
         self.timer = (self.timer + 1) % self.num_m_nodes
@@ -578,27 +579,46 @@ class Forgetful_Memory(Bayesian_Memory):
         super().__init__(category_sizes, num_m_nodes, memory, m_expectation, transition_matrix, timer, data_record, record_until)
         self.forgetting_rate = forgetting_rate
         self.belief_uncertainty = belief_uncertainty
-        self.surprise_advantage_encodings = np.zeros((len(self.category_sizes), self.num_m_nodes))
 
     def sample(self, percept):
         self.forget()
         return super().sample(percept)
-        
-    def encode_memory(self):
-        """
-        Modify W_matrix and C_matrix to encode the current percept into memory.
-        This sets the current memory trace's excitation weights and transition weights.
-        """
-        super().encode_memory()
-        expected_surprise = self.get_expected_surprise()
-        surprise = self.get_surprise()
-        
-        #compute surprise advantage as the log-qoutient of expected surprise and surprise. If expected surprise is 0, compute as negative surprise (this will either be zero or the surprise cap defined in the get surprise function)
-        surprise_advantage = -surprise #this will be overwritten unless expected surprise is 0
-        unmask = expected_surprise != 0 #this is the opposite of a mask I guess
-        surprise_advantage[unmask] = np.log2(expected_surprise[unmask]/surprise[unmask])
-        
-        self.surprise_advantage_encodings[:,self.timer] = surprise_advantage
+
+    def predict_state(self):
+        """Set m_expectation and sensory_expectation based on activation and weight matrices."""
+        super().predict_state()
+        encoded_traces_bool = np.sum(self.transition_matrix, axis = 0) != 0.
+        self.m_expectation[encoded_traces_bool] = self.m_expectation[encoded_traces_bool] + self.belief_uncertainty #add uncertainty
+        self.m_expectation = self.m_expectation/np.sum(self.m_expectation) #renormalize
+
+    def forget(self):
+        category_start_index = 0
+        for i in range(len(self.category_sizes)):
+            category_memories = self.memory[category_start_index:category_start_index + self.category_sizes[i], :]
+            category_memories = _decay_toward_uniform(category_memories, self.forgetting_rate)
+            self.memory[category_start_index:category_start_index + self.category_sizes[i], :] = category_memories
+
+
+            
+
+# %% ../nbs/lib_nbs/02_ECMs.ipynb 36
+from .methods.transforms import _decay_toward_uniform, _logit_bias
+
+class Selectively_Forgetful_Memory(Bayesian_Memory):
+    def __init__(self,
+                 category_sizes: list,                    # Number of sensory input elements.
+                 num_m_nodes: int,                        # Number of memory nodes.
+                 forgetting_rate: float,                  # rate parameter on the exponential decay toward uniform for values in each percept category of memory traces
+                 belief_uncertainty: float,                      # constant to add to m_expectation before renormalization
+                 memory: np.ndarray = None,               # Optional sensory-to-memory weight matrix.
+                 m_expectation: np.ndarray = None,        # Optional 1d array of prior expectations on memories
+                 transition_matrix: np.ndarray = None,     # Optional memory transition matrix.
+                 timer: int = 0,                          # Starting memory time index.
+                 data_record: list = [],                      # a list of variable names to record each time step. Accepts "all"
+                 record_until: int = -1                    # number of steps to prepare for data recording, negative values result in no data recording
+                ):
+        super().__init__(category_sizes, num_m_nodes, forgetting_rate, belief_uncertainty, memory, m_expectation, transition_matrix, timer, data_record, record_until)
+        self.surprise_advantage_encodings = np.zeros((len(self.category_sizes), self.num_m_nodes))
 
     def predict_state(self):
         """Set m_expectation and sensory_expectation based on activation and weight matrices."""
@@ -626,6 +646,3 @@ class Forgetful_Memory(Bayesian_Memory):
             alphas = _logit_bias(self.forgetting_rate, self.surprise_advantage_encodings[i,:]) #forgetting rate biased by surprise advantage for given category in each memory
             category_memories = _decay_toward_uniform(category_memories, alphas)
             self.memory[category_start_index:category_start_index + self.category_sizes[i], :] = category_memories
-
-
-            

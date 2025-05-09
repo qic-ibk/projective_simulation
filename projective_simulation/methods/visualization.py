@@ -127,7 +127,6 @@ def plot_heatmap(matrix,
     plt.colorbar(im, ax=ax)
 
     if show:
-        plt.tight_layout()
         plt.show()
 
 # %% ../../nbs/lib_nbs/methods/03_visualizations.ipynb 6
