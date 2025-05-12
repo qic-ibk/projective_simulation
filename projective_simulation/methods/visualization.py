@@ -213,7 +213,7 @@ def visualize_time_step(t, observations, m_expectations, s_expectations, actions
     plt.show()
 
 # %% ../../nbs/lib_nbs/methods/03_visualizations.ipynb 7
-def plot_circular_network(colors: list, highlight_index: int, ax = None, figwidth = 4) -> None:
+def plot_circular_network(colors: list, highlight_index: int = None, ax = None, figwidth = 4) -> None:
     """
     Plot a circular network where each node is colored according to the `colors` list,
     and the node at `highlight_index` has a bright green border.
@@ -224,8 +224,9 @@ def plot_circular_network(colors: list, highlight_index: int, ax = None, figwidt
     else:
         plt.sca(ax)  # Set current axis
     num_nodes = len(colors)
-    if highlight_index >= num_nodes or highlight_index < 0:
-        raise ValueError("highlight_index must be a valid index within the range of the colors list")
+    if highlight_index is not None:
+        if highlight_index >= num_nodes or highlight_index < 0:
+            raise ValueError("highlight_index must be a valid index within the range of the colors list")
 
     G = nx.Graph()
     G.add_nodes_from(range(num_nodes))
