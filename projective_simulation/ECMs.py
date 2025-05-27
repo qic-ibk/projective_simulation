@@ -588,7 +588,8 @@ class Forgetful_Memory(Bayesian_Memory):
         """Set m_expectation and sensory_expectation based on activation and weight matrices."""
         super().predict_state()
         encoded_traces_bool = np.sum(self.transition_matrix, axis = 0) != 0.
-        self.m_expectation[encoded_traces_bool] = self.m_expectation[encoded_traces_bool] + self.belief_uncertainty #add uncertainty
+        baseline_prior = (self.belief_uncertainty/np.sum(encoded_traces_bool)) * encoded_traces_bool
+        self.m_expectation = (1-self.belief_uncertainty) * self.m_expectation + baseline_prior #mix transition based belief prior with baseline prior as a function of epistemic uncertainty
         self.m_expectation = self.m_expectation/np.sum(self.m_expectation) #renormalize
 
     def forget(self):
@@ -597,6 +598,7 @@ class Forgetful_Memory(Bayesian_Memory):
             category_memories = self.memory[category_start_index:category_start_index + self.category_sizes[i], :]
             category_memories = _decay_toward_uniform(category_memories, self.forgetting_rate)
             self.memory[category_start_index:category_start_index + self.category_sizes[i], :] = category_memories
+            category_start_index += self.category_sizes[i]
 
 
             
@@ -604,7 +606,7 @@ class Forgetful_Memory(Bayesian_Memory):
 # %% ../nbs/lib_nbs/02_ECMs.ipynb 36
 from .methods.transforms import _decay_toward_uniform, _logit_bias
 
-class Selectively_Forgetful_Memory(Bayesian_Memory):
+class Selectively_Forgetful_Memory(Forgetful_Memory):
     def __init__(self,
                  category_sizes: list,                    # Number of sensory input elements.
                  num_m_nodes: int,                        # Number of memory nodes.
@@ -619,13 +621,6 @@ class Selectively_Forgetful_Memory(Bayesian_Memory):
                 ):
         super().__init__(category_sizes, num_m_nodes, forgetting_rate, belief_uncertainty, memory, m_expectation, transition_matrix, timer, data_record, record_until)
         self.surprise_advantage_encodings = np.zeros((len(self.category_sizes), self.num_m_nodes))
-
-    def predict_state(self):
-        """Set m_expectation and sensory_expectation based on activation and weight matrices."""
-        super().predict_state()
-        encoded_traces_bool = np.sum(self.transition_matrix, axis = 0) != 0.
-        self.m_expectation[encoded_traces_bool] = self.m_expectation[encoded_traces_bool] + self.belief_uncertainty #add uncertainty
-        self.m_expectation = self.m_expectation/np.sum(self.m_expectation) #renormalize
 
     def get_expected_surprise(self):
         category_start_index = 0 #will iterate over category sizes, adding to this variable as we go
@@ -646,3 +641,4 @@ class Selectively_Forgetful_Memory(Bayesian_Memory):
             alphas = _logit_bias(self.forgetting_rate, self.surprise_advantage_encodings[i,:]) #forgetting rate biased by surprise advantage for given category in each memory
             category_memories = _decay_toward_uniform(category_memories, alphas)
             self.memory[category_start_index:category_start_index + self.category_sizes[i], :] = category_memories
+            category_start_index += self.category_sizes[i]

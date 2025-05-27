@@ -213,7 +213,7 @@ def visualize_time_step(t, observations, m_expectations, s_expectations, actions
     plt.show()
 
 # %% ../../nbs/lib_nbs/methods/03_visualizations.ipynb 7
-def plot_circular_network(colors: list, highlight_index: int = None, ax = None, figwidth = 4) -> None:
+def plot_circular_network(colors: list, highlight_index: int = None, ax = None, figwidth = 4, node_labels = True) -> None:
     """
     Plot a circular network where each node is colored according to the `colors` list,
     and the node at `highlight_index` has a bright green border.
@@ -230,7 +230,7 @@ def plot_circular_network(colors: list, highlight_index: int = None, ax = None, 
 
     G = nx.Graph()
     G.add_nodes_from(range(num_nodes))
-    # Optionally add edges to make it look like a circular network
+    # add edges to make it look like a circular network
     for i in range(num_nodes):
         G.add_edge(i, (i + 1) % num_nodes)
 
@@ -253,9 +253,10 @@ def plot_circular_network(colors: list, highlight_index: int = None, ax = None, 
         node_size=500 * figwidth  # Increased node size (display coordinates)
     )
 
-    # Draw edges and labels (optional)
+    # Draw edges and labels
     nx.draw_networkx_edges(G, pos)
-    nx.draw_networkx_labels(G, pos)
+    if node_labels:
+        nx.draw_networkx_labels(G, pos)
     ax.set_xlim([-1.5, 1.5])
     ax.set_ylim([-1.5, 1.5])
     #plt.axis('equal')  # Maintain aspect ratio
