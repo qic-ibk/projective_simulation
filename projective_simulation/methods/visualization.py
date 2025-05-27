@@ -213,7 +213,7 @@ def visualize_time_step(t, observations, m_expectations, s_expectations, actions
     plt.show()
 
 # %% ../../nbs/lib_nbs/methods/03_visualizations.ipynb 7
-def plot_circular_network(colors: list, highlight_index: int = None, ax = None, figwidth = 4, node_labels = True) -> None:
+def plot_circular_network(colors: list, highlight_index: int = None, ax = None, figwidth = 4, node_labels = None) -> None:
     """
     Plot a circular network where each node is colored according to the `colors` list,
     and the node at `highlight_index` has a bright green border.
@@ -228,23 +228,27 @@ def plot_circular_network(colors: list, highlight_index: int = None, ax = None, 
         if highlight_index >= num_nodes or highlight_index < 0:
             raise ValueError("highlight_index must be a valid index within the range of the colors list")
 
+    if node_labels is None:
+        labeller = range(num_nodes)
+    else:
+        labeller = node_labels
     G = nx.Graph()
-    G.add_nodes_from(range(num_nodes))
+    G.add_nodes_from(node_labels)
     # add edges to make it look like a circular network
     for i in range(num_nodes):
-        G.add_edge(i, (i + 1) % num_nodes)
+        G.add_edge(labeller[i], labeller[(i + 1) % num_nodes])
 
     #costum circular pos to get clockwise transitions
     angle_step = -2 * np.pi / num_nodes
     radius = 1
     pos = {
-        i: ( radius * np.cos(np.pi/2 + i * angle_step), radius * np.sin(np.pi/2 + i * angle_step))
-        for i in range(num_nodes)
+        labeller[i]: ( radius * np.cos(np.pi/2 + i * angle_step), radius * np.sin(np.pi/2 + i * angle_step))
+        for i in range(len(labeller))
     }
 
     # Draw nodes
-    node_border_colors = ['lime' if i == highlight_index else 'black' for i in range(num_nodes)]
-    linewidths = [3 if i == highlight_index else 0.2 for i in range(num_nodes)]
+    node_border_colors = ['lime' if i == highlight_index else 'black' for i in labeller]
+    linewidths = [3 if i == highlight_index else 0.2 for i in labeller]
     nx.draw_networkx_nodes(
         G, pos,
         node_color=colors,
@@ -255,7 +259,7 @@ def plot_circular_network(colors: list, highlight_index: int = None, ax = None, 
 
     # Draw edges and labels
     nx.draw_networkx_edges(G, pos)
-    if node_labels:
+    if node_labels is not None:
         nx.draw_networkx_labels(G, pos)
     ax.set_xlim([-1.5, 1.5])
     ax.set_ylim([-1.5, 1.5])
