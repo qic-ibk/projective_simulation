@@ -65,17 +65,20 @@ class Cyclic_Env(Abstract_Env):
 # %% ../nbs/lib_nbs/03_environments.ipynb 12
 class Noisy_Cycle(Abstract_Env):
     def __init__(self,
-                 percepts: list,            #list of numpy arrays
+                 percepts: np.ndarray,      #an SxK array where S is the number of Percepts and K is the number of categories for each percept
+                                            #if 1d, converted to Sx1
                  percept_cycle: np.ndarray, #An NxS array, where N is the number of states in the cycle and S is the number of possible percepts
                  initial_state: int = 0
                 ):
+        assert isinstance(percepts, np.ndarray)
+        if percepts.ndim == 1:
+            percepts = percepts[:,np.newaxis]
+        assert np.shape(percepts)[0] == np.shape(percept_cycle)[1]
+        for i in range(np.shape(percept_cycle)[0]):
+            assert np.isclose(np.sum(percept_cycle,axis =1), 1, atol=1e-9).all() #all rows sum to 1
+        
         self.percepts = percepts
         self.percept_cycle = percept_cycle
-        for percept in self.percepts:
-            assert isinstance(percept, np.ndarray)
-        assert len(self.percepts) == np.shape(percept_cycle)[1]
-        for i in range(np.shape(percept_cycle)[0]):
-            assert np.isclose(np.sum(self.percept_cycle,axis =1), 1, atol=1e-9).all() #all rows sum to 1
         state = initial_state
         super().__init__(state = state)
 
@@ -87,8 +90,8 @@ class Noisy_Cycle(Abstract_Env):
 
     def get_observation(self):
         percept_probs = self.percept_cycle[self.state,:]
-        percept_index = np.random.choice(len(self.percepts), p = percept_probs)
-        return self.percepts[percept_index]
+        percept_index = np.random.choice(np.shape(self.percepts)[0], p = percept_probs)
+        return self.percepts[percept_index,:]
 
 # %% ../nbs/lib_nbs/03_environments.ipynb 15
 class RLGL(Abstract_Env):

@@ -71,15 +71,18 @@ def plot_heatmap(matrix,
                  ax=None,
                  vmin=None,
                  vmax=None,
-                 label_scale=1.0
+                 label_scale=1.0,
+                 colorbar_kwargs={},
                 ):
     """
-    Plots a heatmap of the given matrix using the intensity of a single color.
+    Plots a heatmap of the given matrix using the intensity of a single color,
+    allowing arbitrary colorbar arguments to be passed in as a dictionary.
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
         show = True
     else:
+        fig = ax.figure
         show = False  # Don't show if plotting to existing axis
 
     nrows, ncols = matrix.shape
@@ -124,10 +127,14 @@ def plot_heatmap(matrix,
         if ytick_labels is not None:
             ax.set_yticklabels(ytick_labels, fontsize=tick_fontsize)
 
-    plt.colorbar(im, ax=ax)
+    # Handle colorbar with passed arguments
+    if colorbar_kwargs is not None:
+        plt.colorbar(im, ax=ax, **colorbar_kwargs)
 
     if show:
         plt.show()
+    else:
+        return im
 
 # %% ../../nbs/lib_nbs/methods/03_visualizations.ipynb 6
 def visualize_time_step(t, observations, m_expectations, s_expectations, actions, surprise_data, H_matrices, glow_matrices, reinforcement_data):
