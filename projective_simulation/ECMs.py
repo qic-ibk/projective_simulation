@@ -221,12 +221,12 @@ class Bayesian_Network(Abstract_ECM):
 
     def __init__(
         self,
-        memory: np.ndarray,       # a list of np.arrays,
+        memory: np.ndarray,                  # a list of np.arrays,
         transition_matrix: np.ndarray,       # Transition matrix between m-level nodes.
-        category_sizes: list,          #number of states per percept category
-        m_expectation: np.ndarray = None,  # Optional initial expectation distribution over m-nodes.
-        data_record: list = [],       ## a list of variable names to log each time step. Accepts "all"
-        record_until: int = -1        ## default of -1 results no data_recording.
+        category_sizes: list,                #number of states per percept category
+        m_expectation: np.ndarray = None,    # Optional initial expectation distribution over m-nodes.
+        data_record: list = [],              ## a list of variable names to log each time step. Accepts "all"
+        record_until: int = -1               ## default of -1 results no data_recording.
     ):
         super().__init__()
         if not sum(category_sizes) == np.shape(memory)[0]:
@@ -260,7 +260,7 @@ class Bayesian_Network(Abstract_ECM):
     
     def prepare_data_storage(self, data_record, record_until):
         #set up data record
-        self.data = {"m_expectation": None, 
+        self.data_dic = {"m_expectation": None, 
                      "m_excitation": None, 
                      "m_activation": None,
                      "sensory_expectation": None, 
@@ -272,21 +272,21 @@ class Bayesian_Network(Abstract_ECM):
         if "all" in data_record:
             if len(data_record) > 1:
                 print("Warning, data_record contains 'all', additional entries will be ignored")
-            data_record = self.data.keys()
+            data_record = self.data_dic.keys()
 
         if self.record_until < 0 and len(data_record) > 0:
             print("Warning, 'data_record' indicates data should be recorded but a positive value was not given for 'record_until'. No data will be recorded")
 
         #add empty data set for each variable in data_log
         for variable in data_record:
-            if variable not in self.data.keys():
+            if variable not in self.data_dic.keys():
                 print("Warning, " + str(variable) + " in data_record not a valid variable name and will be ignored")
             elif variable in ["m_expectation", "m_excitation", "m_activation"]:
-                self.data[variable] = np.full((self.record_until, self.num_m_nodes), fill_value = -1.) #fill value is outside allowable range for variables to indicate unfilled data
+                self.data_dic[variable] = np.full((self.record_until, self.num_m_nodes), fill_value = -1.) #fill value is outside allowable range for variables to indicate unfilled data
             elif variable == "sensory_expectation":
-                self.data[variable] = np.full((self.record_until, np.sum(self.category_sizes)), fill_value = -1.) #fill value is outside allowable range for variables to indicate unfilled data
+                self.data_dic[variable] = np.full((self.record_until, np.sum(self.category_sizes)), fill_value = -1.) #fill value is outside allowable range for variables to indicate unfilled data
             elif variable == "surprise":
-                self.data[variable] = np.full((self.record_until, len(self.category_sizes)), fill_value = -1.) #fill value is outside allowable range for variables to indicate unfilled data
+                self.data_dic[variable] = np.full((self.record_until, len(self.category_sizes)), fill_value = -1.) #fill value is outside allowable range for variables to indicate unfilled data
             else:
                 print("Warning, unexpected condition in data_record variables")        
     
@@ -341,8 +341,9 @@ class Bayesian_Network(Abstract_ECM):
         """Compute the total surprise of the network."""
         # Compute the surprise of each element using the binary cross-entropy formula
         category_expectations = self.sensory_expectation[self.get_active_percept_indices()]
-        category_expectations[category_expectations < 0.000001] = 0.000001 #set maximum surprise to avoid log of zero
-        surprise_values = -np.log2(category_expectations)
+        mask = category_expectations == 0.
+        surprise_values = np.full(category_expectations.shape, fill_value = -1)
+        surprise_values[~mask] = -np.log2(category_expectations[~mask])
 
         # Return surprise for each percept category
         return surprise_values
@@ -354,22 +355,22 @@ class Bayesian_Network(Abstract_ECM):
     def sample(self, percept) -> np.ndarray:
         '''given a percept, updates network states and returns a vector of sensory expectations'''
         #record m_expectation
-        if self.data_timer < self.record_until and self.data["m_expectation"] is not None:
-            self.data["m_expectation"][self.data_timer,:] = self.m_expectation
+        if self.data_timer < self.record_until and self.data_dic["m_expectation"] is not None:
+            self.data_dic["m_expectation"][self.data_timer,:] = self.m_expectation
 
         #get excitation and record
         self.excite_network(percept)
-        if self.data_timer < self.record_until and self.data["m_excitation"] is not None:
-            self.data["m_excitation"][self.data_timer,:] = self.m_excitation
+        if self.data_timer < self.record_until and self.data_dic["m_excitation"] is not None:
+            self.data_dic["m_excitation"][self.data_timer,:] = self.m_excitation
 
         #record surprise
-        if self.data_timer < self.record_until and self.data["surprise"] is not None:
-            self.data["surprise"][self.data_timer,:] = self.get_surprise()
+        if self.data_timer < self.record_until and self.data_dic["surprise"] is not None:
+            self.data_dic["surprise"][self.data_timer,:] = self.get_surprise()
 
         #activate and record
         self.activate()
-        if self.data_timer < self.record_until and self.data["m_activation"] is not None:
-            self.data["m_activation"][self.data_timer,:] = self.m_activation
+        if self.data_timer < self.record_until and self.data_dic["m_activation"] is not None:
+            self.data_dic["m_activation"][self.data_timer,:] = self.m_activation
 
         #predict
         self.set_expectations()
@@ -394,10 +395,10 @@ class Bayesian_Memory(Bayesian_Network):
         num_m_nodes: int,                        # Number of memory nodes.
         memory: np.ndarray = None,               # Optional sensory-to-memory weight matrix.
         m_expectation: np.ndarray = None,        # Optional 1d array of prior expectations on memories
-        transition_matrix: np.ndarray = None,     # Optional memory transition matrix.
+        transition_matrix: np.ndarray = None,    # Optional memory transition matrix.
         timer: int = 0,                          # Starting memory time index.
-        data_record: list = [],                      # a list of variable names to log each time step. Accepts "all"
-        record_until: int = -1                    # number of steps to prepare for data logging, negative values result in no data recording
+        data_record: list = [],                  # a list of variable names to log each time step. Accepts "all"
+        record_until: int = -1                   # number of steps to prepare for data logging, negative values result in no data recording
     ):
         # Default to informationless percept element probabilities if none provided
         if memory is None:
@@ -440,7 +441,7 @@ class Bayesian_Memory(Bayesian_Network):
 
             category_sum_prediction = np.sum(self.sensory_expectation[range(category_start_index, category_start_index + self.category_sizes[i])])
             if not np.abs(category_sum_prediction - 1) < 1e-9:
-                raise ValueError("""Expecations for each percept category must be a probability distribution. 
+                raise ValueError("""Expectations for each percept category must be a probability distribution. 
                 When the Memory Network's internal timer was set to """ + str(self.timer) + """
                 sensory_expectation did not sum to 1 for category """ + str(i))
                                                                       
@@ -467,26 +468,32 @@ class Bayesian_Memory(Bayesian_Network):
                 print("Warning, memory process has exceded steps pre-allocated for data-recording. Further variable states will not be stored")
         
     def sample(self, percept):
+        '''
+        The sample function takes a percept as input and returns a probability distribution over each percept category as output.
+        This probability distribution is a prediction for the next percept.
+        In the process of generating this prediction, the new percept is encoded to memory slot, and a new
+        orior belief (expectation) is set over the memory space.
+        '''
         #record m_expectation and sensory expectation
-        if self.data_timer < self.record_until and self.data["m_expectation"] is not None:
-            self.data["m_expectation"][self.data_timer,:] = self.m_expectation
+        if self.data_timer < self.record_until and self.data_dic["m_expectation"] is not None:
+            self.data_dic["m_expectation"][self.data_timer,:] = self.m_expectation
 
-        if self.data_timer < self.record_until and self.data["sensory_expectation"] is not None:
-            self.data["sensory_expectation"][self.data_timer,:] = self.sensory_expectation
+        if self.data_timer < self.record_until and self.data_dic["sensory_expectation"] is not None:
+            self.data_dic["sensory_expectation"][self.data_timer,:] = self.sensory_expectation
 
         #get excitation and record
         self.excite_network(percept)
-        if self.data_timer < self.record_until and self.data["m_excitation"] is not None:
-            self.data["m_excitation"][self.data_timer,:] = self.m_excitation
+        if self.data_timer < self.record_until and self.data_dic["m_excitation"] is not None:
+            self.data_dic["m_excitation"][self.data_timer,:] = self.m_excitation
 
         #record surprise
-        if self.data_timer < self.record_until and self.data["surprise"] is not None:
-            self.data["surprise"][self.data_timer,:] = self.get_surprise()
+        if self.data_timer < self.record_until and self.data_dic["surprise"] is not None:
+            self.data_dic["surprise"][self.data_timer,:] = self.get_surprise()
 
         #activate and record
         self.activate()
-        if self.data_timer < self.record_until and self.data["m_activation"] is not None:
-            self.data["m_activation"][self.data_timer,:] = self.m_activation
+        if self.data_timer < self.record_until and self.data_dic["m_activation"] is not None:
+            self.data_dic["m_activation"][self.data_timer,:] = self.m_activation
 
         #encode memory
         self.encode_memory()

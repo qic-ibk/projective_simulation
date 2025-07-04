@@ -28,9 +28,10 @@ def _exponentiated_shift(x, k, epsilon = 0.0001):
     return (x + epsilon) ** (np.exp(-k)) / ((1 + 2*epsilon) ** (np.exp(-k)))
 
 # %% ../../nbs/lib_nbs/methods/01_transforms.ipynb 8
+import numpy as np
 def _decay_toward_uniform(pmfs: np.ndarray, alphas: np.ndarray) -> np.ndarray:
     """
-    Apply decay toward uniform distribution for each column of a batch of PMFs,
+    Apply decay toward uniform distribution for each row of a batch of PMFs,
     with a potentially different alpha per column.
 
     Args:
@@ -41,12 +42,12 @@ def _decay_toward_uniform(pmfs: np.ndarray, alphas: np.ndarray) -> np.ndarray:
         Array of shape (K, N), where each column is decayed toward uniform.
     """
     if pmfs.ndim == 1:
-        pmfs = pmfs[:, np.newaxis]  # Convert to shape (K, 1)
+        pmfs = pmfs[np.newaxis,:]  # Convert to shape (1,K)
 
-    if not np.allclose(pmfs.sum(axis=0), 1, atol=1e-9):
-        raise ValueError("All columns in pmfs must sum to one")
+    if not np.allclose(pmfs.sum(axis=1), 1, atol=1e-9):
+        raise ValueError("All rows in pmfs must sum to one")
 
-    N = pmfs.shape[1]
+    N = pmfs.shape[0]
 
     if np.isscalar(alphas) or alphas.shape == (1,):
         alphas = np.full((N,), float(alphas))
@@ -54,13 +55,13 @@ def _decay_toward_uniform(pmfs: np.ndarray, alphas: np.ndarray) -> np.ndarray:
     if not np.all((0 <= alphas) & (alphas <= 1)):
         raise ValueError("All alphas must be between 0 and 1")
 
-    K = pmfs.shape[0]
-    uniform = np.full((K, N), 1 / K)
-    alphas = alphas[np.newaxis, :]  # Ensure broadcasting over rows
+    K = pmfs.shape[1]
+    uniform = np.full((N, K), 1 / K)
+    alphas = alphas[:,np.newaxis]  # Ensure broadcasting over rows
     new_pmfs = (1 - alphas) * pmfs + alphas * uniform
     return new_pmfs
 
-# %% ../../nbs/lib_nbs/methods/01_transforms.ipynb 13
+# %% ../../nbs/lib_nbs/methods/01_transforms.ipynb 14
 def _logit_bias(rate, bias):
     if isinstance(rate, np.ndarray):
         assert np.issubdtype(rate.dtype, np.floating)

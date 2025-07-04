@@ -233,7 +233,7 @@ def plot_circular_network(colors: list, highlight_index: int = None, ax = None, 
     else:
         labeller = node_labels
     G = nx.Graph()
-    G.add_nodes_from(node_labels)
+    G.add_nodes_from(labeller)
     # add edges to make it look like a circular network
     for i in range(num_nodes):
         G.add_edge(labeller[i], labeller[(i + 1) % num_nodes])
