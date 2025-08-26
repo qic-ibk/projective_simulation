@@ -135,8 +135,7 @@ class Two_Layer(Abstract_ECM):
         if self.glow_method == 'sum':
             self.gmatrix[int(percept_index),int(action)] += 1.
         if self.glow_method == 'init':
-            self.gmatrix[int(percept_index),int(action)] = 1.
-            
+            self.gmatrix[int(percept_index),int(action)] = 1.   
 
         return action
 
@@ -157,7 +156,7 @@ class Two_Layer(Abstract_ECM):
                                     np.zeros([1,self.num_actions]),
                                     axis=0)
 
-    def  learn(self, reward):
+    def learn(self, reward):
         """
         Updates the h-matrix and g-matrix based on the reward received using the standard PS update rule.
         """

@@ -94,6 +94,7 @@ class Basic_2Layer_Agent(Basic_Agent):
                  num_actions : int, # The number of available actions. If ECM = is not given, must be int
                  glow: float = 0.1, # The glow (or eta) parameter. Won't be used if ECM is given
                  damp: float = 0., # The damping (or gamma) parameter. Won't be used if ECM is given
+                 glow_method: str = 'sum', # The method for updating the glow. See ECMs.Two_Layer for details
                  policy : str = 'greedy', # The policy to use. See ECMs.Two_Layer for details
                  policy_parameters : dict = None, # The parameters for the policy. See ECMs.Two_Layer for details
                  percept_processor = None
@@ -105,6 +106,7 @@ class Basic_2Layer_Agent(Basic_Agent):
         self.ECM = Two_Layer(num_actions = num_actions, 
                             g_damp = glow,
                             h_damp =  damp,
+                            glow_method = glow_method,
                             policy = policy, 
                             policy_parameters = policy_parameters)
         
