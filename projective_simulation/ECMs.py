@@ -736,7 +736,7 @@ class Semantic_Memory(Long_Term_Memory):
 
     def sample(self, percept):
         self.last_posterior = self.belief_posterior.copy() #don't need to make this copy if transition updates is integrated into sample function (must come after posterior update, but before prior update)
-        self.presynaptic_activations = self.belief_posterior[:,np.newaxis] * self.transition_predictions
+        self.presynaptic_activations = self.last_posterior[:,np.newaxis] * self.transition_predictions
         super().sample(percept)
         self.reencode_memories()
         self.update_transitions()
@@ -751,8 +751,8 @@ class Semantic_Memory(Long_Term_Memory):
             self.sensory_predictions[i,:] = reencoded_memory
 
     def update_transitions(self):
-        weighted_synapse_differences = np.maximum(self.last_posterior[:,np.newaxis] * self.learning_factor * (self.belief_posterior - self.presynaptic_activations),0)
+        weighted_synapse_differences = self.last_posterior[:,np.newaxis] * self.learning_factor * (self.belief_posterior - self.presynaptic_activations)
         #add synapse differences to transition weights for memory-based hypothesis
-        self.transition_weights[:self.memory_capacity,:self.memory_capacity] = self.transition_weights[:self.memory_capacity,:self.memory_capacity] + weighted_synapse_differences[:self.memory_capacity,:self.memory_capacity]
+        self.transition_weights[:self.memory_capacity,:self.memory_capacity] = np.maximum(self.transition_weights[:self.memory_capacity,:self.memory_capacity] + weighted_synapse_differences[:self.memory_capacity,:self.memory_capacity], 0)
         row_sums = np.sum(self.transition_weights, axis=1, keepdims = True)
         self.transition_predictions = self.transition_weights/row_sums
