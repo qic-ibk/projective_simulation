@@ -646,7 +646,6 @@ class Long_Term_Memory(Short_Term_Memory):
                  memory_bias: float,                      # predicted transition probability from non-memory hypothesis space to unreachable memory hypothesis space
                  fading_rate: float,                  # rate parameter on the exponential decay toward uniform for values in each percept category of memory traces
                  surprise_factor: float = 0.,         #scales the degree to which surprise slows down memory fading
-                 reencoding_factor: float = 0.,    #scales the degree to which re-activation of a memory affects its sensory predictions
                  reuse_factor: float = 0.,
                  sensory_predictions: np.ndarray = None,               # Optional sensory-to-memory weight matrix.
                  belief_prior: np.ndarray = None,        # Optional 1d array of prior expectations on memories
@@ -666,21 +665,14 @@ class Long_Term_Memory(Short_Term_Memory):
                          timer = timer, 
                          data_record = data_record, 
                          record_until = record_until)
-        self.reencoding_factor = reencoding_factor
         self.reuse_factor = reuse_factor
 
     def sample(self, percept):
         super().sample(percept)
-        self.reencode_memories()
+        self.stablize_memories()
 
-    def reencode_memories(self):
-        categorical_encoding=self.get_one_hot_percept().astype(float) #set active sensory category states to 1
+    def stablize_memories(self):
         for i in range(self.timer):
-            #wieght current sensory state in reincoding
-            reencoding_strength = self.reencoding_factor * self.belief_posterior[i] 
-            #mix old encoding with new encoding according to weight
-            reencoded_memory = reencoding_strength * categorical_encoding + (1-reencoding_strength) * self.sensory_predictions[i,:]
-            self.sensory_predictions[i,:] = reencoded_memory
             #reduce fading rate of reactivated memory accoring to weight of reactivation (posterior belief)
             self.memory_fade[i,:] = self.memory_fade[i,:] * (1-(self.belief_posterior[i] * self.reuse_factor))
     
@@ -715,9 +707,9 @@ class Semantic_Memory(Long_Term_Memory):
                  memory_bias: float,                      # predicted transition probability from non-memory hypothesis space to unreachable memory hypothesis space
                  fading_rate: float,                  # rate parameter on the exponential decay toward uniform for values in each percept category of memory traces
                  surprise_factor: float = 0.,         #scales the degree to which surprise slows down memory fading
-                 reencoding_factor: float = 0.,    #scales the degree to which re-activation of a memory affects its sensory predictions
                  reuse_factor: float = 0.,
                  learning_factor: float = 0.,        #scales influence of prediction differences on transition weights
+                 reencoding_factor: float = 0.,    #scales the degree to which re-activation of a memory affects its sensory predictions
                  sensory_predictions: np.ndarray = None,               # Optional sensory-to-memory weight matrix.
                  belief_prior: np.ndarray = None,        # Optional 1d array of prior expectations on memories
                  transition_predictions: np.ndarray = None,     # Optional memory transition matrix.
@@ -730,13 +722,15 @@ class Semantic_Memory(Long_Term_Memory):
                          memory_bias = memory_bias,
                          fading_rate = fading_rate,
                          surprise_factor = surprise_factor,
-                         sensory_predictions = sensory_predictions, 
+                         sensory_predictions = sensory_predictions,
+                         reuse_factor = reuse_factor,
                          belief_prior = belief_prior, 
                          transition_predictions = transition_predictions, 
                          timer = timer, 
                          data_record = data_record, 
                          record_until = record_until)
         self.learning_factor = learning_factor
+        self.reencoding_factor = reencoding_factor
         self.transition_weights = self.transition_predictions.copy()
         self.presynaptic_activations = np.zeros_like(self.transition_predictions) #initialize
 
@@ -746,6 +740,15 @@ class Semantic_Memory(Long_Term_Memory):
         super().sample(percept)
         self.reencode_memories()
         self.update_transitions()
+
+    def reencode_memories(self):
+        categorical_encoding=self.get_one_hot_percept().astype(float) #set active sensory category states to 1
+        for i in range(self.timer):
+            #wieght current sensory state in reincoding
+            reencoding_strength = self.reencoding_factor * self.belief_posterior[i] 
+            #mix old encoding with new encoding according to weight
+            reencoded_memory = reencoding_strength * categorical_encoding + (1-reencoding_strength) * self.sensory_predictions[i,:]
+            self.sensory_predictions[i,:] = reencoded_memory
 
     def update_transitions(self):
         weighted_synapse_differences = np.maximum(self.last_posterior[:,np.newaxis] * self.learning_factor * (self.belief_posterior - self.presynaptic_activations),0)
