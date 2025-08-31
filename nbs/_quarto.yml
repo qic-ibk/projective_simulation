@@ -7,15 +7,15 @@ project:
     
 format:
   html:
-    theme: zephyr
+    theme: cosmo
     css: style.css
     toc: true
-    linkcolor: "#15adc2ff"
+    linkcolor: "#384C73"
     monobackgroundcolor: "#f8f4dfff"
     page-layout: full
 
 website:
-  title: "PS"
+  title: "Projective Simulation"
   site-url: "https://qic-uibk.github.io/PS/"
   description: "Projective Simulation"
   repo-branch: master
@@ -24,13 +24,16 @@ website:
   open-graph: true
   repo-actions: [issue]
   navbar:  
-    logo: figs/logo.png
-    background: "#f8f6e4ff"
-    foreground: "#154c64ff"
+    background: "#64758C"
+    foreground: "#D9D9D9"
     search: true      
     right:
       - icon: github
-        href: "https://github.com/qic-uibk/projectivesimulation/"      
+        href: "https://github.com/qic-uibk/projectivesimulation/"     
+
+
+
+        
   sidebar: 
     foreground: "#154c64ff"
     style: floating
@@ -39,9 +42,16 @@ website:
       - text: Get started
         href: index.ipynb
       - section: Documentation
+        href: lib_nbs/index_docs.ipynb
         contents:
-            - lib_nbs/03_agents.ipynb
-            - lib_nbs/04_ECMs.ipynb
+            - lib_nbs/agents/01_core.ipynb            
+            - section: ECMs
+              contents:
+                - lib_nbs/ECMs/01_core.ipynb
+                - lib_nbs/ECMs/02_priming.ipynb
       - section: Tutorials
+        href: tutorials/index_tutorials.ipynb
         contents:
-            - tutorials/02_example_tutorial.ipynb
+            - tutorials/10_Introduction_to_PS.ipynb
+      - text: Research
+        href: webpage/research.ipynb
