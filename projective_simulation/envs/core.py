@@ -9,10 +9,8 @@ from abc import ABC, abstractmethod
 
 # %% ../../nbs/lib_nbs/envs/01_core.ipynb 4
 class Abstract_Env(ABC):
-    """A minimal Environment, every environment should be Derived from this class.
-
-    Examples:
-    >>> pass
+    """
+    Abstract environment from which other environments can de derived.
     """
 
     def __init__(self, 

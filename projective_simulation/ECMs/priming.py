@@ -3,16 +3,11 @@
 # %% auto 0
 __all__ = ['Priming_ECM']
 
-# %% ../../nbs/lib_nbs/ECMs/02_priming.ipynb 2
+# %% ../../nbs/lib_nbs/ECMs/02_priming.ipynb 3
 from ..methods import transforms
 from .core import Two_Layer
 
 class Priming_ECM(Two_Layer):
-    '''
-    This sub-class of the Two-Layer ECM adds a variable for action priming.
-    This variable should be a list of floats, each element of which corresponds to an action in the ECM.
-    These "priming values" are summed with h-values of any edge connected to the associated action node prior to calculating walk probabilites with the softmax function
-    '''
     def __init__(self, 
                  num_actions: int, # The number of available actions.                 
                  glow: float = 0.1, # The glow (or eta) parameter. 
@@ -20,6 +15,12 @@ class Priming_ECM(Two_Layer):
                  softmax: float = 0.5, # The softmax (or beta) parameter.
                  action_primes: list = None, #weights on the probability that deliberation steps into each action. Defaults to 0 for each action 
                 ):
+        
+        '''
+        This sub-class of the Two-Layer ECM adds a variable for action priming.
+        This variable should be a list of floats, each element of which corresponds to an action in the ECM.
+        These "priming values" are summed with h-values of any edge connected to the associated action node prior to calculating walk probabilites with the softmax function
+        '''
         if action_primes is None:
             action_primes = [0.] * num_actions
         assert len(action_primes) == num_actions

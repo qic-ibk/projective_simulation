@@ -19,7 +19,7 @@ website:
   site-url: "https://qic-uibk.github.io/PS/"
   description: "Projective Simulation"
   repo-branch: master
-  repo-url: "https://github.com/qic-uibk/projective-simulation/"
+  repo-url: "https://github.com/qic-uibk/projective_simulation/"
   twitter-card: true
   open-graph: true
   repo-actions: [issue]
