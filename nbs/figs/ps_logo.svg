@@ -7,6 +7,9 @@
    id="svg52"
    sodipodi:docname="ps_logo.svg"
    inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   inkscape:export-filename="ps_logo.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -20,15 +23,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="1.0703125"
-     inkscape:cx="209.28467"
-     inkscape:cy="181.25547"
+     inkscape:zoom="3.0273009"
+     inkscape:cx="149.63825"
+     inkscape:cy="107.35636"
      inkscape:window-width="1920"
      inkscape:window-height="1106"
      inkscape:window-x="-11"
      inkscape:window-y="-11"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg52" />
+     inkscape:current-layer="g61" />
   <defs
      id="defs2">
     <marker
@@ -82,33 +85,46 @@
       .edge { stroke:#13324a; stroke-width:6; fill:none; stroke-linecap:round; stroke-linejoin:round; }
       .node { stroke:#13324a; stroke-width:0; }
     </style>
+    <linearGradient
+       id="bg-1"
+       x1="0"
+       y1="0"
+       x2="0"
+       y2="768"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-72.33395,-236.27854)">
+      <stop
+         offset="0"
+         stop-color="#f7f1e6"
+         id="stop1-5"
+         style="stop-color:#000000;stop-opacity:1;" />
+      <stop
+         offset="100%"
+         stop-color="#f1eadf"
+         id="stop2-2" />
+    </linearGradient>
   </defs>
   <g
      id="g61"
      transform="translate(-75.620438,-85.835979)">
-    <circle
-       class="node"
-       cx="151.10948"
-       cy="142.33577"
-       r="22"
-       fill="#0e3a66"
-       id="circle28" />
+    <path
+       style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#13324a;stroke-width:4.7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Triangle);paint-order:markers fill stroke"
+       d="m 163.68861,145.13237 c 0,0 -16.83697,13.21142 29.97226,39.97195"
+       id="path55"
+       sodipodi:nodetypes="cc" />
     <path
        style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#13324a;stroke-width:4.7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Triangle);paint-order:markers fill stroke"
        d="m 100.85246,229.95763 c 0,0 -8.875909,-39.24087 27.09489,-69.13868"
        id="path52" />
     <path
        style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#13324a;stroke-width:4.7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Triangle);paint-order:markers fill stroke"
-       d="m 125.66423,261.60584 c 0,0 8.40876,42.9781 62.59854,39.70803"
-       id="path53" />
+       d="m 125.66423,261.60584 c 0,0 -10.75022,43.30843 43.43956,40.03836"
+       id="path53"
+       sodipodi:nodetypes="cc" />
     <path
        style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#13324a;stroke-width:4.7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Triangle);paint-order:markers fill stroke"
-       d="m 202.74453,291.50365 c 0,0 -14.48176,-54.65693 7.9416,-78.0146"
-       id="path54" />
-    <path
-       style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#13324a;stroke-width:4.7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Triangle);paint-order:markers fill stroke"
-       d="m 207.50995,197.53541 c 0,0 16.83697,-13.21142 -29.97226,-39.97195"
-       id="path55"
+       d="m 202.74453,291.50365 c 0,0 -24.7219,-45.07744 -2.29854,-68.43511"
+       id="path54"
        sodipodi:nodetypes="cc" />
     <path
        style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#13324a;stroke-width:4.7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Triangle);paint-order:markers fill stroke"
@@ -140,6 +156,13 @@
        d="m 300.37956,179.38686 c 0,0 12.96208,44.27996 37.98916,40.02947"
        id="path61"
        sodipodi:nodetypes="cc" />
+    <circle
+       class="node"
+       cx="151.10948"
+       cy="142.33577"
+       r="22"
+       fill="#0e3a66"
+       id="circle28" />
   </g>
   <!-- soft cream background -->
   <!-- edges (curved random-walk style) -->
