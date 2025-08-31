@@ -11,7 +11,7 @@ format:
     css: style.css
     toc: true
     linkcolor: "#384C73"
-    monobackgroundcolor: "#f8f4dfff"
+    monobackgroundcolor: "#000000ff"
     page-layout: full
 
 website:
@@ -24,8 +24,9 @@ website:
   open-graph: true
   repo-actions: [issue]
   navbar:  
-    background: "#64758C"
-    foreground: "#D9D9D9"
+    logo: figs/ps_logo.png
+    background: "#f7f1e6ff"
+    foreground: "#000000ff"
     search: true      
     right:
       - icon: github
@@ -35,7 +36,7 @@ website:
 
         
   sidebar: 
-    foreground: "#154c64ff"
+    foreground: "#000000ff"
     style: floating
     collapse-level: 1
     contents:
@@ -49,9 +50,18 @@ website:
               contents:
                 - lib_nbs/ECMs/01_core.ipynb
                 - lib_nbs/ECMs/02_priming.ipynb
+            - lib_nbs/envs/01_core.ipynb
       - section: Tutorials
         href: tutorials/index_tutorials.ipynb
         contents:
-            - tutorials/10_Introduction_to_PS.ipynb
+            - section: Learning PS
+              contents: 
+                  - tutorials/learning_ps/00_Introduction_to_PS.ipynb
+            - section: Applications
+              contents:
+                  - tutorials/applications/00_optimal_search.ipynb
+            - section: Contributing
+              contents:
+                  - tutorials/contributing/00_contributing.ipynb
       - text: Research
         href: webpage/research.ipynb

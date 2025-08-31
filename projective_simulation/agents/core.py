@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['Abstract_Agent', 'Basic_Agent', 'Basic_2Layer_Agent']
 
-# %% ../../nbs/lib_nbs/agents/01_core.ipynb 4
+# %% ../../nbs/lib_nbs/agents/01_core.ipynb 5
 from ..methods.lib_helpers import CustomABCMeta
 from abc import abstractmethod
 
@@ -43,7 +43,7 @@ class Abstract_Agent(metaclass = CustomABCMeta):
     
     
 
-# %% ../../nbs/lib_nbs/agents/01_core.ipynb 11
+# %% ../../nbs/lib_nbs/agents/01_core.ipynb 12
 class Basic_Agent(Abstract_Agent):
     
     def __init__(self, 
@@ -90,8 +90,8 @@ class Basic_Agent(Abstract_Agent):
         """
         self.ECM.learn(reward)
 
-# %% ../../nbs/lib_nbs/agents/01_core.ipynb 16
-from ..ECMs import Two_Layer
+# %% ../../nbs/lib_nbs/agents/01_core.ipynb 17
+from ..ECMs.core import Two_Layer
 
 class Basic_2Layer_Agent(Basic_Agent):
     def __init__(self, 
