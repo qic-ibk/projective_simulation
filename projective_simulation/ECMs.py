@@ -446,7 +446,7 @@ class Bayesian_Memory_Filter(Bayesian_Filter):
             transition_predictions = np.zeros((num_hypotheses, num_hypotheses)) #initialize
             #fill memory transition hypotheses
             for i in range(self.memory_capacity):
-                j = (i+1) % self.memory_capacity
+                j = (i+1) 
                 transition_predictions[i,j] = 1 #initial memory hypotheses predict transition to next memory hypothesis
             #fill non-memory transition hypotheses
             for i in range(self.memory_capacity,num_hypotheses):
@@ -697,7 +697,15 @@ class Long_Term_Memory(Short_Term_Memory):
                 self.transition_predictions[i,:] = 0
                 self.transition_predictions[i, i] = 1
 
-        self.memory_fade[self.timer,:] = (1 - self.surprise_factor) * self.fading_rate + self.surprise_factor * self.fading_rate ** self.get_surprise()
+        surprisal_gaps = self.get_surprise() - self.get_prediction_entropies()
+        self.memory_fade[self.timer,:] = self.fading_rate ** (self.log_base ** (self.surprise_factor * surprisal_gaps))
+
+    def get_prediction_entropies(self):
+        sensor_labels, inv = np.unique(self.category_indexer, return_inverse=True)
+        plogp = self.sensory_expectation * np.log(self.sensory_expectation)
+        prediction_entropies = -np.bincount(inv, weights = plogp, minlength = sensor_labels.size) #sums the plogp for each value in category_indexer and returns as 1d array
+        converted_entropies = prediction_entropies/np.log(self.log_base)
+        return(converted_entropies)
 
 # %% ../nbs/lib_nbs/02_ECMs.ipynb 36
 class Semantic_Memory(Long_Term_Memory):
