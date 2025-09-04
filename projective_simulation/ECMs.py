@@ -2,7 +2,8 @@
 
 # %% auto 0
 __all__ = ['standard_ps_upd', 'Abstract_ECM', 'Two_Layer', 'Priming_ECM', 'Bayesian_Filter', 'Bayesian_Memory_Filter',
-           'Short_Term_Memory', 'Long_Term_Memory', 'Semantic_Memory']
+           'Short_Term_Memory', 'sigmoid_fading_rate', 'surprise_advantage_fading_rate', 'Long_Term_Memory',
+           'Semantic_Memory']
 
 # %% ../nbs/lib_nbs/02_ECMs.ipynb 5
 def standard_ps_upd(reward, hmatrix, gmatrix, h_damp, g_damp):
@@ -638,7 +639,31 @@ class Short_Term_Memory(Bayesian_Memory_Filter):
             faded_memories = _decay_toward_uniform(self.sensory_predictions[:,self.category_indexer == i], category_rates)
             self.sensory_predictions[:,self.category_indexer == i] = faded_memories
 
-# %% ../nbs/lib_nbs/02_ECMs.ipynb 31
+# %% ../nbs/lib_nbs/02_ECMs.ipynb 32
+## Fading Rate Encoders
+def sigmoid_fading_rate(gamma, sigma, sensor_state_probabilities, log_base = 2):
+    #print(f'probabilites: {sensor_state_probabilities}')
+    skew = np.log(gamma/(1-gamma))/np.log(log_base) #sets rate to gamma when logistic component is 0 (i.e. at sigmoid center)
+    #print(f'skew: {skew}')
+    shift = 2*sensor_state_probabilities - 1 #centers sigmoid at p = 0.5
+    #print(f'shift: {shift}')
+    scale = -np.log(1-sigma)/np.log(log_base) #slope of sigmoid
+    #print(f'scale: {scale}')
+    x = skew + scale * shift
+    fading_rates = 1/(1 + log_base ** -x)
+    #print(f'fading_rates: {fading_rates}')
+    return(fading_rates)
+
+def surprise_advantage_fading_rate(gamma,sigma, category_indexes, categorical_predictions, categorical_suprises, log_base = 2):
+    sensor_labels, inv = np.unique(category_indexes, return_inverse=True)
+    plogp = categorical_predictions * np.log(categorical_predictions)
+    prediction_entropies = -np.bincount(inv, weights = plogp, minlength = sensor_labels.size) #sums the plogp for each value in category_indexer and returns as 1d array
+    converted_entropies = prediction_entropies/np.log(log_base)
+    surprise_gaps = categorical_surprises - converted_entropies
+    fading_rates = gamma ** (log_base ** (sigma * surprise_gaps))
+    return(fading_rates)
+
+# %% ../nbs/lib_nbs/02_ECMs.ipynb 34
 class Long_Term_Memory(Short_Term_Memory):
     def __init__(self,
                  category_sizes: list,                    # Number of sensory input elements.
@@ -652,7 +677,8 @@ class Long_Term_Memory(Short_Term_Memory):
                  transition_predictions: np.ndarray = None,     # Optional memory transition matrix.
                  timer: int = 0,                          # Starting memory time index.
                  data_record: list = [],                      # a list of variable names to record each time step. Accepts "all"
-                 record_until: int = -1                    # number of steps to prepare for data recording, negative values result in no data recording
+                 record_until: int = -1,                   # number of steps to prepare for data recording, negative values result in no data recording
+                 fading_rate_method = "sigmoid"
                 ):
         super().__init__(category_sizes = category_sizes, 
                          memory_capacity = memory_capacity,
@@ -666,6 +692,7 @@ class Long_Term_Memory(Short_Term_Memory):
                          data_record = data_record, 
                          record_until = record_until)
         self.reuse_factor = reuse_factor
+        self.fading_rate_method = fading_rate_method
 
     def sample(self, percept):
         super().sample(percept)
@@ -697,17 +724,28 @@ class Long_Term_Memory(Short_Term_Memory):
                 self.transition_predictions[i,:] = 0
                 self.transition_predictions[i, i] = 1
 
-        surprisal_gaps = self.get_surprise() - self.get_prediction_entropies()
-        self.memory_fade[self.timer,:] = self.fading_rate ** (self.log_base ** (self.surprise_factor * surprisal_gaps))
+        self.memory_fade[self.timer,:] = self.get_fading_rates()
 
-    def get_prediction_entropies(self):
-        sensor_labels, inv = np.unique(self.category_indexer, return_inverse=True)
-        plogp = self.sensory_expectation * np.log(self.sensory_expectation)
-        prediction_entropies = -np.bincount(inv, weights = plogp, minlength = sensor_labels.size) #sums the plogp for each value in category_indexer and returns as 1d array
-        converted_entropies = prediction_entropies/np.log(self.log_base)
-        return(converted_entropies)
+    def get_fading_rates(self):
+        if self.fading_rate_method == "sigmoid":
+            fading_rates = sigmoid_fading_rate(gamma = self.fading_rate, 
+                                                sigma = self.surprise_factor, 
+                                                sensor_state_probabilities = self.sensory_expectation[self.get_one_hot_percept()], 
+                                                log_base = self.log_base)
+        elif self.fading_rate_method == "surprise_advantage":
+            fading_rates = surprise_advantage_fading_rate(gamma = self.fading_rate, 
+                                                          sigma = self.surprise_factor, 
+                                                          category_indexes = self.category_indexer, 
+                                                          categorical_predictions = self.sensory_expectation, 
+                                                          categorical_suprises = self.get_surprise(),
+                                                          log_base = self.log_base)
+        else:
+            raise ValueError(f'{self.fading_rate_method} is not a valid fading_rate_method')
 
-# %% ../nbs/lib_nbs/02_ECMs.ipynb 36
+        return(fading_rates)
+
+
+# %% ../nbs/lib_nbs/02_ECMs.ipynb 40
 class Semantic_Memory(Long_Term_Memory):
     def __init__(self,
                  category_sizes: list,                    # Number of sensory input elements.
@@ -723,7 +761,8 @@ class Semantic_Memory(Long_Term_Memory):
                  transition_predictions: np.ndarray = None,     # Optional memory transition matrix.
                  timer: int = 0,                          # Starting memory time index.
                  data_record: list = [],                      # a list of variable names to record each time step. Accepts "all"
-                 record_until: int = -1                    # number of steps to prepare for data recording, negative values result in no data recording
+                 record_until: int = -1,                    # number of steps to prepare for data recording, negative values result in no data recording
+                 fading_rate_method = "sigmoid"
                 ):
         super().__init__(category_sizes = category_sizes, 
                          memory_capacity = memory_capacity,
@@ -736,7 +775,8 @@ class Semantic_Memory(Long_Term_Memory):
                          transition_predictions = transition_predictions, 
                          timer = timer, 
                          data_record = data_record, 
-                         record_until = record_until)
+                         record_until = record_until,
+                        fading_rate_method = fading_rate_method)
         self.learning_factor = learning_factor
         self.reencoding_factor = reencoding_factor
         self.transition_weights = self.transition_predictions.copy()
@@ -759,7 +799,7 @@ class Semantic_Memory(Long_Term_Memory):
             self.sensory_predictions[i,:] = reencoded_memory
 
     def update_transitions(self):
-        weighted_synapse_differences = self.last_posterior[:,np.newaxis] * self.learning_factor * (self.belief_posterior - self.presynaptic_activations)
+        weighted_synapse_differences = self.learning_factor * (np.outer(self.last_posterior, self.belief_posterior)  - self.presynaptic_activations)
         #add synapse differences to transition weights for memory-based hypothesis
         self.transition_weights[:self.memory_capacity,:self.memory_capacity] = np.maximum(self.transition_weights[:self.memory_capacity,:self.memory_capacity] + weighted_synapse_differences[:self.memory_capacity,:self.memory_capacity], 0)
         row_sums = np.sum(self.transition_weights, axis=1, keepdims = True)
