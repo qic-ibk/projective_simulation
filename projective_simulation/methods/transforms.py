@@ -19,5 +19,75 @@ def _softmax(beta, x):
 
         return softmax_x
 
+# %% ../../nbs/lib_nbs/methods/01_transforms.ipynb 4
 def _logistic(x, L:float = 1,k:float = 1,x_shift = 0,y_shift:float = 0):
-    return [L/(1 + np.exp(-k*(xi-x_shift))) + y_shift for xi in x]
+    return L/(1 + np.exp(-k*(x-x_shift))) + y_shift
+
+# %% ../../nbs/lib_nbs/methods/01_transforms.ipynb 6
+def _exponentiated_shift(x, k, epsilon = 0.0001):
+    return (x + epsilon) ** (np.exp(-k)) / ((1 + 2*epsilon) ** (np.exp(-k)))
+
+# %% ../../nbs/lib_nbs/methods/01_transforms.ipynb 8
+import numpy as np
+def _decay_toward_uniform(pmfs: np.ndarray, alphas: np.ndarray) -> np.ndarray:
+    """
+    Apply decay toward uniform distribution for each row of a batch of PMFs,
+    with a potentially different alpha per column.
+
+    Args:
+        pmfs: Array of shape (K, N), where each column is a PMF summing to 1.
+        alphas: Array of shape (N,), or scalar in shape (1,) or (), each alpha ∈ [0, 1].
+
+    Returns:
+        Array of shape (K, N), where each column is decayed toward uniform.
+    """
+    if pmfs.ndim == 1:
+        pmfs = pmfs[np.newaxis,:]  # Convert to shape (1,K)
+
+    if not np.allclose(pmfs.sum(axis=1), 1, atol=1e-9):
+        raise ValueError("All rows in pmfs must sum to one")
+
+    N = pmfs.shape[0]
+
+    if np.isscalar(alphas) or alphas.shape == (1,):
+        alphas = np.full((N,), float(alphas))
+    
+    if not np.all((0 <= alphas) & (alphas <= 1)):
+        raise ValueError("All alphas must be between 0 and 1")
+
+    K = pmfs.shape[1]
+    uniform = np.full((N, K), 1 / K)
+    alphas = alphas[:,np.newaxis]  # Ensure broadcasting over rows
+    new_pmfs = (1 - alphas) * pmfs + alphas * uniform
+    return new_pmfs
+
+# %% ../../nbs/lib_nbs/methods/01_transforms.ipynb 14
+def _logit_bias(rate, bias):
+    if isinstance(rate, np.ndarray):
+        assert np.issubdtype(rate.dtype, np.floating)
+    else:
+        assert isinstance(rate, (float, np.floating))
+        rate = np.array(rate)
+    if np.any(rate < 0) or np.any(rate > 1):
+        raise ValueError("rate in logit_bias transformation must be between 0 and 1")
+    if isinstance(bias, np.ndarray):
+        assert np.issubdtype(bias.dtype, np.floating)
+    else:
+        assert isinstance(bias, (int, float, np.floating, np.integer))
+        bias = np.array(bias)
+        
+    #broadcast if either rate or bias given as scalar
+    if rate.size == 1:
+        rate = np.full_like(bias, rate.item())
+    elif bias.size == 1:
+        bias = np.full_like(rate, bias.item())
+    # Check if arrays can be compared element-wise
+    if rate.shape != bias.shape:
+        raise ValueError(f"Array shapes do not match: {rate.shape} vs {bias.shape}")
+
+    #set up mask for 0 and 1 edge cases
+    mask = (rate == 0) | (rate == 1)
+    new_rate = rate.copy() #intialize new variable for transform
+    new_rate[~mask] = np.log2(rate[~mask]/(1-rate[~mask])) + bias[~mask] #add bias in logit space
+    new_rate[~mask] = 1/(1 + 2**-new_rate[~mask]) #reverse sigmoid
+    return new_rate    

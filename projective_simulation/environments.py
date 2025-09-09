@@ -39,28 +39,204 @@ class Abstract_Env(ABC):
         raise NotImplementedError
 
 # %% ../nbs/lib_nbs/03_environments.ipynb 6
-class RLGL(Abstract_Env):
-    def __init__(self, state = 0, transition_matrix = None):
-        self.state = state
-        self.state_labels = {0: "red", 1: "green"}
-        if transition_matrix is None:
-            #create random uniform transition probabilities
-            transition_matrix = np.array([[0.5,0.5],[0.5,0.5]])
-        assert np.shape(transition_matrix) == (2,2)
-        self.transition_matrix = transition_matrix            
+class POMDP(Abstract_Env):
+    def __init__(self,
+                 percepts: np.ndarray,             #An SxK array where S is the number of Percepts and K is the number of categories for each percept. If 1d, converted to Sx1
+                 observation_function: np.ndarray, #An NxS array, where N is the number of states in the cycle and S is the number of possible percepts. Rows contain probability distributions
+                 transition_function: np.ndarray,  #An NxNxA array, where A is the number of actions. Rows in each slice contain probability distributions.
+                 initial_state: int = 0            #Start state of POMDP
+                ):
+        """
+        assert that dimensions of input arguments align and assign input arguments to self
+        """
+        
+        assert isinstance(percepts, np.ndarray)
+        if percepts.ndim == 1:
+            percepts = percepts[:,np.newaxis]
+        assert np.shape(percepts)[0] == np.shape(observation_function)[1]
+        assert np.shape(transition_function)[0] == np.shape(observation_function)[0]
+        assert np.shape(transition_function)[0] == np.shape(transition_function)[1]
+        assert transition_function.ndim == 3
+        assert np.isclose(np.sum(transition_function,axis =1), 1, atol=1e-9).all() #all rows sum to 1
+        assert np.isclose(np.sum(observation_function,axis =1), 1, atol=1e-9).all() #all rows sum to 1
+        assert initial_state in range(np.shape(observation_function)[0])
+         
+        self.percepts = percepts
+        self.observation_function = observation_function
+        self.transition_function = transition_function
+        state = initial_state
+        super().__init__(state = state)
 
     def transition(self, action):
-        '''
-        In this environment the agents action determines the reward but does not determine the state
-        '''
-        self.state = np.random.choice(range(2), p = self.transition_matrix[self.state,])
+        """
+        randomly select a new state using transition probabilites from current state and action
+        """
+        if not action in range(np.shape(self.transition_function)[2]):
+            raise ValueError("The action input for POMDP transition must be integer valued and within the scope of the transition function")
+        transition_probs = self.transition_function[self.state,:, action]
+        self.state = np.random.choice(len(transition_probs), p = transition_probs)
 
     def get_observation(self):
-        return self.state_labels[self.state]
+        """
+        randomly select a percept using observation probabilites from current state
+        """
+        percept_probs = self.observation_function[self.state,:]
+        percept_index = np.random.choice(len(percept_probs), p = percept_probs)
+        return self.percepts[percept_index,:]
 
-    def get_reward(self, action):
-        if action == self.state:
-            return 1
+# %% ../nbs/lib_nbs/03_environments.ipynb 10
+class Cyclic_Env(POMDP):
+    """
+    An environment that cycles deterministically through a sequence of percepts that may be passed to an agent
+    """
+    def __init__(self,
+                 percept_cycle: np.ndarray, #an N x K array, where N is the number of states in the cycles and K is the number of categories in a percept. If 1d, will be converted to Nx1
+                 initial_state: int = 0,
+                 supress_warning: bool = False
+                ):
+        '''
+        Sets up a determinstic cycles using the general format of a POMDP
+        '''
+        if percept_cycle.ndim == 1:
+            percept_cycle = percept_cycle[:, np.newaxis]
+        
+        # Get unique rows and, for each row of percept_cycle, the index of its unique representative
+        percepts, inverse = np.unique(percept_cycle, axis=0, return_inverse=True)
+        
+        # One-hot encode those indices to form the observation function
+        observation_function = np.eye(percepts.shape[0], dtype=int)[inverse]       
+
+        #create a cyclic shifted diagonal matrix
+        S = np.shape(percept_cycle)[0]
+        transition_function = np.roll(np.eye(N = S), shift = 1, axis = 1) 
+        transition_function = transition_function[:,:,np.newaxis] #adds a dimension to allow for a single action
+        
+        super().__init__(percepts = percepts, observation_function = observation_function, transition_function = transition_function, initial_state = initial_state)
+        self.supress_warning = supress_warning
+        
+    def transition(self, action):
+        if not action == 0 and not self.supress_warning:
+            print('Warning: Cyclic_Env is not action mediated. Action input has been converted to 0')
+        action = 0
+        super().transition(action)
+
+# %% ../nbs/lib_nbs/03_environments.ipynb 16
+class Noisy_Cycle(POMDP):
+    def __init__(self,
+                 percepts: np.ndarray,      #an SxK array where S is the number of Percepts and K is the number of categories for each percept
+                                            #if 1d, converted to Sx1
+                 observation_function: np.ndarray, #An NxS array, where N is the number of states in the cycle and S is the number of possible percepts
+                 initial_state: int = 0,
+                 supress_warning = False
+                ):
+        if percepts.ndim == 1:
+            percepts = percepts[:,np.newaxis]
+            
+        #create a cyclic shifted diagonal matrix for transition_function
+        S = np.shape(observation_function)[0] #number of percepts
+        transition_function = np.roll(np.eye(N = S), shift = 1, axis = 1)
+        transition_function = transition_function[:,:,np.newaxis] #adds a dimension to allow for a single action
+
+        super().__init__(percepts = percepts, observation_function = observation_function, transition_function = transition_function, initial_state = initial_state)
+        self.supress_warning = supress_warning
+        
+    def transition(self, action):
+        if not action == 0 and not self.supress_warning:
+            print('Warning: Cyclic_Env is not action mediated. Action input has been converted to 0')
+        action = 0
+        super().transition(action)
+
+# %% ../nbs/lib_nbs/03_environments.ipynb 20
+import inspect
+class Causal_DBN(Abstract_Env):
+    def __init__(self,
+                 state: np.ndarray, #a one dimensional array. Each element gives the state of a variable.
+                 update_functions: dict, #a dictionary of the functions used to update each variable
+                 variable_names: np.ndarray = None, #an optional list of variables names. Default is integers. Must match keys of update functions
+                 action_variables: np.ndarray = None, #indicates which system variables are under the control of an agent. Used to ensure inputs to transition function are correct
+                 causal_network: np.ndarray = None #a square boolean array that indicates whether a variable at t is a parent of another variable at t+1. Optional: merely used to check transition function inputs
+                ):
+        if variable_names is None:
+            variable_names = np.array(range(self.num_variables))
+
+        #check variables
+        if not state.ndim == 1:
+            raise ValueError("'state' must be a numpy array with a single dimension")
+        self.num_variables = np.shape(state)[0]
+
+        if causal_network is not None:
+            assert causal_network.dtype == np.bool_
+            if not np.shape(causal_network) == (self.num_variables, self.num_variables):
+                raise ValueError("causal network must be a square matrix with each dimension equal to the number of variables given by the state input")
+
+        if action_variables is None:
+            action_variables = np.full(self.num_variables, fill_value = False)
+        for action_variable in variable_names[action_variables]:
+            update_functions[action_variable] = self.action_function        
+        for key, update_f in update_functions.items():
+            if not key in variable_names:
+                raise ValueError("Keys of update_function dictionary must correspond to variable names. Default variable names are integer indices")
+            assert callable(update_f)            
+            ## Check that update function inputs match causal_network
+            if causal_network is not None:
+                function_parents = list(inspect.signature(update_f).parameters)
+                i = np.where(variable_names == key)[0][0] #get parent index (indexes get first match in first dimension)
+                if not set(function_parents) == set(variable_names[causal_network[:,i]]): #compare input variables names to children in DBN
+                    raise ValueError(f'The update function for {variable_names[i]} does not have input variables that match parents in causal_network')
+
+        if not len(update_functions) == self.num_variables:
+            raise ValueError("there must be an update function for each variable in 'state'")
+
+
+        self.state = state
+        self.update_functions = update_functions
+        self.variable_names = variable_names
+        self.action_variables = action_variables
+
+    def transition(self, action: dict = None):
+        if action is None:
+            action = {}
+
+        #update action states
+        for key, value in action.items():
+            if not key in self.variable_names:
+                raise ValueError("keys of action dictionary must be environment variable names")
+            self.state[self.variable_names == key] = value
+
+        #apply transition functions
+        new_states = np.zeros(self.num_variables, dtype = self.state.dtype)
+        for variable, update_f in self.update_functions.items():
+            required_args = set(inspect.signature(update_f).parameters.keys())
+            input_dict = {k: v for k, v in zip(self.variable_names, self.state) if k in required_args}
+            new_states[self.variable_names == variable] = update_f(**input_dict)
+        self.state = new_states
+
+    def get_observation(self):
+        return self.state
+    
+    def action_function(self, x): #as actions are given as input, the stored update functions for these variables should not do anything
+        return x
+
+# %% ../nbs/lib_nbs/03_environments.ipynb 25
+class Light_And_Lever(Causal_DBN):
+    def __init__(self, interval, state = None):
+        self.state_space = {"light": np.array(("off", "green", "blue")),
+                            "lever": np.array(("unpressed", "pressed")),
+                            "reward_stimulus": np.array(("none", "food", "shock")),
+                            "timer": np.array((range(2+interval*2))) #number of states in light cycle, on for green, on for blue, and one for each interval step between the two
+                           }
+        variable_names = np.array(["light", "lever", "reward_stimulus", "timer"])
+        if state is None:
+            state = np.array((1,0,0,0)) #default start state green light, unpressed lever, no reward, timer at 0
+        update_functions = {"light": self.update_light, "lever": self.bernoulli, "reward_stimulus": self.update_reward, "timer": self.update_timer}
+        super().__init__(state, update_functions, variable_names)
+        assert np.issubdtype(self.state.dtype, np.integer)
+        
+    def update_light(self, timer):
+        if timer == len(self.state_space["timer"]) -1: #if timer is in last state . . .
+            return np.where(self.state_space["light"] == "green")[0][0] #. . . light will turn green. 0 indices get first match in first dimension
+        elif timer == len(self.state_space["timer"])/2 - 1: #if timer is one step from half-way . . .
+            return np.where(self.state_space["light"] == "blue")[0][0] #. . . light will turn blue
         else:
             return 0
 
