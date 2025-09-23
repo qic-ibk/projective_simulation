@@ -7,41 +7,67 @@ project:
     
 format:
   html:
-    theme: zephyr
+    theme: cosmo
     css: style.css
     toc: true
-    linkcolor: "#15adc2ff"
-    monobackgroundcolor: "#f8f4dfff"
+    linkcolor: "#384C73"
+    monobackgroundcolor: "#f7f1e6ff"
     page-layout: full
 
 website:
-  title: "PS"
+  title: "Projective Simulation"
   site-url: "https://qic-uibk.github.io/PS/"
   description: "Projective Simulation"
   repo-branch: master
-  repo-url: "https://github.com/qic-uibk/projective-simulation/"
+  repo-url: "https://github.com/qic-uibk/projective_simulation/"
   twitter-card: true
   open-graph: true
   repo-actions: [issue]
   navbar:  
-    logo: figs/logo.png
-    background: "#f8f6e4ff"
-    foreground: "#154c64ff"
+    logo: figs/ps_logo.png
+    background: "#f7f1e6ff"
+    foreground: "#000000ff"
     search: true      
     right:
       - icon: github
-        href: "https://github.com/qic-uibk/projectivesimulation/"      
+        href: "https://github.com/qic-uibk/projectivesimulation/"     
+
+
+
+        
   sidebar: 
-    foreground: "#154c64ff"
+    foreground: "#000000ff"
     style: floating
     collapse-level: 1
     contents:
       - text: Get started
         href: index.ipynb
       - section: Documentation
+        href: lib_nbs/index_docs.ipynb
         contents:
-            - lib_nbs/03_agents.ipynb
-            - lib_nbs/04_ECMs.ipynb
+            - section: Agents
+              contents:
+                  - lib_nbs/agents/01_core.ipynb            
+                  - lib_nbs/agents/foraging_agents.ipynb            
+            - section: ECMs
+              contents:
+                - lib_nbs/ECMs/01_core.ipynb
+                - lib_nbs/ECMs/02_priming.ipynb
+            - section: Environments
+              contents:
+                - lib_nbs/envs/01_core.ipynb
+                - lib_nbs/envs/foraging_envs.ipynb
       - section: Tutorials
+        href: tutorials/index_tutorials.ipynb
         contents:
-            - tutorials/02_example_tutorial.ipynb
+            - section: Learning PS
+              contents: 
+                  - tutorials/learning_ps/00_Introduction_to_PS.ipynb
+            - section: Applications
+              contents:
+                  - tutorials/applications/00_optimal_search.ipynb
+            - section: Contributing
+              contents:
+                  - tutorials/contributing/00_contributing.ipynb
+      - text: Research
+        href: webpage/research.ipynb
