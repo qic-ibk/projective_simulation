@@ -5,7 +5,7 @@ __all__ = ['isBetween_c_Vec_numba', 'pareto_sample', 'rand_choice_nb', 'TargetEn
            'parallel_Reset1D_sharp', 'parallel_Reset1D_exp', 'ResetEnv_2D', 'parallel_Reset2D_sharp',
            'parallel_Reset2D_exp', 'parallel_Reset2D_policies', 'TurnResetEnv_2D', 'search_loop_turn_reset_sharp']
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 4
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 5
 import numpy as np
 
 try:
@@ -19,7 +19,7 @@ except:
 import math
 import random
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 8
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 9
 @njit
 def isBetween_c_Vec_numba(a, b, c, r):
         """
@@ -65,7 +65,7 @@ def isBetween_c_Vec_numba(a, b, c, r):
             
         return mask
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 10
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 11
 @njit
 def pareto_sample(alpha, xm, size=1):
     samples = np.zeros(size)
@@ -75,7 +75,7 @@ def pareto_sample(alpha, xm, size=1):
         samples[ii] = x
     return samples
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 12
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 13
 @njit
 def rand_choice_nb(arr, prob):
     """
@@ -85,7 +85,7 @@ def rand_choice_nb(arr, prob):
     """
     return arr[np.searchsorted(np.cumsum(prob), np.random.random(), side="right")]
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 14
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 15
 @jitclass([("target_positions", float64[:,:]) ,
            ("current_rewards", float64[:]) ,
            ("kicked", float64[:]) ,
@@ -242,7 +242,7 @@ class TargetEnv():
         self.positions[agent_index] = (self.positions[agent_index])%self.L
     
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 18
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 19
 @njit
 def reset_search_loop(T, # Number of steps 
                       reset_policy, # Reset policy
@@ -270,7 +270,7 @@ def reset_search_loop(T, # Number of steps
     return rewards
 
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 20
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 21
 @jitclass
 class ResetEnv_1D():
     L : float
@@ -302,7 +302,7 @@ class ResetEnv_1D():
             return 1
         else: return 0
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 22
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 23
 @njit(parallel = True)
 def parallel_Reset1D_sharp(T, resets, L, D):
     '''
@@ -334,7 +334,7 @@ def parallel_Reset1D_exp(T, rates, L, D):
         rews_rate[idxr] = reset_search_loop(T = T, reset_policy = reset_policy, env = env)
     return rews_rate
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 24
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 25
 @jitclass([("position", float64[:]),
            ("target_position", float64[:,:]),
            ("previous_pos", float64[:])
@@ -393,7 +393,7 @@ class ResetEnv_2D():
             
         
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 26
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 27
 @njit(parallel = True)
 def parallel_Reset2D_sharp(T, resets, dist_target, radius_target, D):
     rews_reset = np.zeros_like(resets)
@@ -434,7 +434,7 @@ def parallel_Reset2D_policies(T, reset_policies, dist_target, radius_target, D):
         
     return rews_rate
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 29
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 30
 @jitclass([("position", float64[:]),
            ("target_position", float64[:,:]),
            ("previous_pos", float64[:])
@@ -510,7 +510,7 @@ class TurnResetEnv_2D():
                 self.previous_pos = self.position.copy()
                 return 0
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 31
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 32
 def search_loop_turn_reset_sharp(T, reset, turn, env):
     """
     Runs a search loop of T steps. There is a single counter that works as follows:

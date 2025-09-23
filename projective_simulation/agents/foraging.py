@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['rand_choice_nb', 'Forager', 'train_loop_reset', 'run_agents_reset_1D', 'run_agents_reset_2D']
 
-# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 4
+# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 5
 import numpy as np
 try:
     from numba.experimental import jitclass
@@ -12,7 +12,7 @@ except:
     import warnings
     warnings.warn("numba library not installed and necessary for agents.foraging. Please install it manually.", UserWarning)
 
-# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 8
+# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 9
 @njit
 def rand_choice_nb(arr, prob):
     """
@@ -22,7 +22,7 @@ def rand_choice_nb(arr, prob):
     """
     return arr[np.searchsorted(np.cumsum(prob), np.random.random(), side="right")]
 
-# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 10
+# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 11
 @jitclass([("size_state_space", int64[:]),           
            ("initial_prob_distr", float64[:,:]),           
            ("fixed_policy", float64[:,:]) ,
@@ -323,7 +323,7 @@ class Forager():
         ''' simplified to case of single forager. Returns list because is what deliberate needs'''
         return np.array([self.agent_state])
 
-# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 14
+# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 15
 @njit
 def train_loop_reset(episodes, time_ep, agent, env, h_mat_allT = False, when_save_h_mat = 1, reset_after_reward = True):  
 
@@ -375,7 +375,7 @@ def train_loop_reset(episodes, time_ep, agent, env, h_mat_allT = False, when_sav
       
     return (save_rewards/time_ep, policy_t) if h_mat_allT else (save_rewards/time_ep, agent.h_matrix)
 
-# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 18
+# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 19
 from ..envs.foraging import ResetEnv_1D
 
 
@@ -454,7 +454,7 @@ def run_agents_reset_1D(episodes, time_ep, N_agents,
         
     return save_rewards, save_h_matrix
 
-# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 21
+# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 22
 from ..envs.foraging import ResetEnv_2D
 
 
