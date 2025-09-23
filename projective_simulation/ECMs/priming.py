@@ -6,6 +6,7 @@ __all__ = ['Priming_ECM']
 # %% ../../nbs/lib_nbs/ECMs/02_priming.ipynb 3
 from ..methods import transforms
 from .core import Two_Layer
+import numpy as np
 
 class Priming_ECM(Two_Layer):
     def __init__(self, 

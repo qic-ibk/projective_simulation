@@ -11,7 +11,7 @@ format:
     css: style.css
     toc: true
     linkcolor: "#384C73"
-    monobackgroundcolor: "#000000ff"
+    monobackgroundcolor: "#f7f1e6ff"
     page-layout: full
 
 website:
@@ -45,12 +45,18 @@ website:
       - section: Documentation
         href: lib_nbs/index_docs.ipynb
         contents:
-            - lib_nbs/agents/01_core.ipynb            
+            - section: Agents
+              contents:
+                  - lib_nbs/agents/01_core.ipynb            
+                  - lib_nbs/agents/foraging_agents.ipynb            
             - section: ECMs
               contents:
                 - lib_nbs/ECMs/01_core.ipynb
                 - lib_nbs/ECMs/02_priming.ipynb
-            - lib_nbs/envs/01_core.ipynb
+            - section: Environments
+              contents:
+                - lib_nbs/envs/01_core.ipynb
+                - lib_nbs/envs/foraging_envs.ipynb
       - section: Tutorials
         href: tutorials/index_tutorials.ipynb
         contents:
