@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['NUMBA_ACTIVATED', 'failed_numba_import', 'maybe_jitclass', 'maybe_njit', 'isBetween_c_Vec_numba', 'pareto_sample',
-           'rand_choice_nb', 'TargetEnv', 'reset_search_loop', 'ResetEnv_1D', 'parallel_Reset1D_sharp',
+           'rand_choice_nb', 'TargetEnv', 'ResetEnv_1D', 'reset_search_loop', 'parallel_Reset1D_sharp',
            'parallel_Reset1D_exp', 'ResetEnv_2D', 'parallel_Reset2D_sharp', 'parallel_Reset2D_exp',
            'parallel_Reset2D_policies', 'TurnResetEnv_2D', 'search_loop_turn_reset_sharp']
 
@@ -155,11 +155,11 @@ class TargetEnv():
     lc_distribution : str
     
     
-    def __init__(self,
+    def __init__(self, 
                  Nt = 10, # Number of targets.
                  L = 1.3, #  Size of the (squared) world.
                  r = 1.5, # Radius with center the target position. It defines the area in which agent detects the target.
-                 lc = np.array([[1.0],[1]]), # Cutoff length. Displacement away from target 
+                 lc = [[1],[1]], # Cutoff length. Displacement away from target 
                  agent_step = 1, # Displacement of one step. The default is 1.
                  num_agents = 1, # Number of agents that forage at the same time. The default is 1. > 1 not fully implemented
                  destructive = False, # True if targets are destructive. The default is False.
@@ -174,7 +174,7 @@ class TargetEnv():
         self.Nt = Nt
         self.L = L
         self.r = r
-        self.lc = lc
+        self.lc = np.array(lc)
         self.agent_step = agent_step 
         self.num_agents = num_agents
         self.destructive_targets = destructive
@@ -284,6 +284,42 @@ class TargetEnv():
     
 
 # %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 22
+@maybe_jitclass()
+class ResetEnv_1D():
+    L : float
+    D : float    
+    position : float    
+    
+    def __init__(self,
+                 L = 1.3, # Distance to cross to get reward
+                 D = 1.0, # Diffusion coefficient
+                ):  
+        '''
+        Class defining a 1D environment where the agent can either continue walking or reset to the origin.
+        Reward = 1 if the agent crosses the distance L, else = 0.
+        '''      
+   
+        self.L = L
+        self.D = D
+        self.position = 0
+        
+    def init_env(self):
+        self.position = 0
+    
+    def update_pos(self, 
+                   action # 0: continue walk, 1: reset to origin
+                  ): # Reward = 1 if crossed L, else = 0
+        
+        if action == 0:
+            self.position += np.random.randn()*np.sqrt(2*self.D)        
+        else: self.position = 0
+                
+        if self.position >= self.L: 
+            self.init_env()
+            return 1
+        else: return 0
+
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 24
 @maybe_njit()
 def reset_search_loop(T, # Number of steps 
                       reset_policy, # Reset policy
@@ -311,41 +347,13 @@ def reset_search_loop(T, # Number of steps
     return rewards
 
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 24
-@maybe_jitclass()
-class ResetEnv_1D():
-    L : float
-    D : float    
-    position : float    
-    
-    def __init__(self,
-                 L = 1.3,
-                 D = 1.0,                    
-                ):        
-   
-        self.L = L
-        self.D = D
-        self.position = 0
-        
-    def init_env(self):
-        self.position = 0
-    
-    def update_pos(self, 
-                   action # 0: continue walk, 1: reset to origin
-                  ): # Reward = 1 if crossed L, else = 0
-        
-        if action == 0:
-            self.position += np.random.randn()*np.sqrt(2*self.D)        
-        else: self.position = 0
-                
-        if self.position >= self.L: 
-            self.init_env()
-            return 1
-        else: return 0
-
 # %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 26
 @maybe_njit(parallel = True)
-def parallel_Reset1D_sharp(T, resets, L, D):
+def parallel_Reset1D_sharp(T : int, # Number of steps
+                           resets : np.array, # Array of resetting times
+                            L : float, # Distance to cross to get reward
+                            D : float # Diffusion coefficient
+                            )-> np.array: # Rewards obtained for each resetting time
     '''
     Runs the Reset 1D loop in parallel for different sharp resetting times.
     '''
@@ -396,7 +404,11 @@ class ResetEnv_2D():
                  dist_target = 0.2, # Distance from init position and target
                  radius_target = 0.5, # Radius of the target
                  D = 1.0, # Diffusion coefficient of the walker              
-                ):    
+                ): 
+        '''
+        Class defining a 2D environment where the agent can either continue walking or reset to the origin.
+        Reward = 1 if the agent enters the area defined by the distance and radius of the target.
+        '''   
         
 
         self.D = D
@@ -440,7 +452,16 @@ class ResetEnv_2D():
 
 # %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 30
 @maybe_njit(parallel = True)
-def parallel_Reset2D_sharp(T, resets, dist_target, radius_target, D):
+def parallel_Reset2D_sharp(T, # Number of steps
+                           resets, # Array of resetting times
+                           dist_target, # Distance to target
+                           radius_target, # Radius of the target
+                           D # Diffusion coefficient of the walker
+                           )-> np.array: # Rewards obtained for each sharp resetting time
+    '''
+    Runs the Reset 2D loop in parallel for different sharp resetting times.
+    '''
+
     rews_reset = np.zeros_like(resets)
     
     for idxr in _range(len(resets)): 
@@ -455,7 +476,15 @@ def parallel_Reset2D_sharp(T, resets, dist_target, radius_target, D):
 
 
 @maybe_njit(parallel = True)
-def parallel_Reset2D_exp(T, rates, dist_target, radius_target, D):
+def parallel_Reset2D_exp(T, # Number of steps 
+                         rates, # Reset rates
+                         dist_target, # Distance of the target
+                         radius_target, # Radius of the target
+                         D # Diffusion coefficient of the walker
+                         )-> np.array: # Rewards obtained for each exponential rate
+    '''
+    Runs the Reset 2D loop in parallel for different sharp resetting times.
+    '''
     
     rews_rate = np.zeros_like(rates)
     for idxr in _range(len(rates)):
@@ -467,7 +496,15 @@ def parallel_Reset2D_exp(T, rates, dist_target, radius_target, D):
     return rews_rate
 
 @maybe_njit(parallel = True)
-def parallel_Reset2D_policies(T, reset_policies, dist_target, radius_target, D):
+def parallel_Reset2D_policies(T, # Number of steps
+                              reset_policies, # Array of reset policies
+                              dist_target, # Distance of the target
+                              radius_target, # Radius of the target
+                              D # Diffusion coefficient of the walker
+                              )-> np.array: # Rewards obtained for each reset policy
+    '''
+    Runs the Reset 2D loop in parallel for different sharp resetting times.
+    '''
     
     rews_rate = np.zeros(reset_policies.shape[0])    
     
@@ -479,7 +516,7 @@ def parallel_Reset2D_policies(T, reset_policies, dist_target, radius_target, D):
         
     return rews_rate
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 33
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 32
 if NUMBA_ACTIVATED:
     spec = [("position", float64[:]),
                ("target_position", float64[:,:]),
@@ -559,8 +596,12 @@ class TurnResetEnv_2D():
                 self.previous_pos = self.position.copy()
                 return 0
 
-# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 35
-def search_loop_turn_reset_sharp(T, reset, turn, env):
+# %% ../../nbs/lib_nbs/envs/foraging_envs.ipynb 34
+def search_loop_turn_reset_sharp(T, # Number of steps
+                                 reset, # Reset time
+                                turn, # Turn time
+                                 env # Environment
+                                 ): # Number of rewards obtained
     """
     Runs a search loop of T steps. There is a single counter that works as follows:
 

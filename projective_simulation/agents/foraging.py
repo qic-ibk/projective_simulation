@@ -48,17 +48,14 @@ def maybe_njit(*args, **kwargs):
         return func
     return deco    
 
-# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 10
+# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 9
 @maybe_njit()
-def rand_choice_nb(arr, prob):
-    """
-    :param arr: A 1D numpy array of values to sample from.
-    :param prob: A 1D numpy array of probabilities for the given samples.
-    :return: A random sample from the given array with a given probability.
-    """
+def rand_choice_nb(arr: np.array, # A 1D numpy array of values to sample from.
+                   prob: np.array # A 1D numpy array of probabilities for the given samples.
+                  ) -> float: # A random sample from the given array with a given probability.
     return arr[np.searchsorted(np.cumsum(prob), np.random.random(), side="right")]
 
-# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 12
+# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 11
 if NUMBA_ACTIVATED:
     spec = [
         ("size_state_space", types.int64[:]),
@@ -121,14 +118,13 @@ class Forager():
                  # Works as follows: s (sum) -> g_mat += 1 or r (reset) -> gmat = 1 when updating gmat
                  g_update = 's', 
                 ):
-        """
-
-        This class defines a Forager agent, able to perform actions and learn from rewards based on the PS paradigm.
+        '''
+        This class defines a Forager agent, able to perform actions and learn from rewards based on the PS formalism.
 
         This is an updated version from the one used in the original paper (https://doi.org/10.1088/1367-2630/ad19a8), 
         taking into account the improvements made to the H and G matrices proposed by Michele Caraglio in our paper
         (https://doi.org/10.1039/D3SM01680C).
-        """
+        '''
         
         self.agent_state = 0
         
@@ -364,9 +360,19 @@ class Forager():
         ''' simplified to case of single forager. Returns list because is what deliberate needs'''
         return np.array([self.agent_state])
 
-# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 16
+# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 15
 @maybe_njit()
-def train_loop_reset(episodes, time_ep, agent, env, h_mat_allT = False, when_save_h_mat = 1, reset_after_reward = True):  
+def train_loop_reset(episodes : int, # Number of episodes
+                     time_ep : int, # Length of an episode 
+                     agent : object, # Agent that will be trained 
+                     env : object, # Environment where the agent will be trained 
+                     h_mat_allT : bool = False, # If True saves the h_mat at desired time
+                     when_save_h_mat = 1, # If h_mat_allT = True, sets the time where h-matrix is saved
+                     reset_after_reward = True # If True, the agents performs a reset after getting a target
+                    ):  
+    '''
+    Training loop for a forager agent in a given environment. 
+    '''
 
     if h_mat_allT: 
         policy_t = np.zeros((int(np.ceil(episodes/when_save_h_mat)), 
@@ -416,32 +422,37 @@ def train_loop_reset(episodes, time_ep, agent, env, h_mat_allT = False, when_sav
       
     return (save_rewards/time_ep, policy_t) if h_mat_allT else (save_rewards/time_ep, agent.h_matrix)
 
-# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 20
+# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 19
 from ..envs.foraging import ResetEnv_1D
 
 
 
 @maybe_njit(parallel = True)
-def run_agents_reset_1D(episodes, time_ep, N_agents,
+def run_agents_reset_1D(episodes, # Number of episodes
+                        time_ep, # Length of an episode
+                        N_agents, # Number of parallel agents
                        # Environment props
-                       D = 1/2, L = 10.0, 
+                       D = 1/2, # Diffusion coefficient
+                       L = 10.0, # Size of the environment
                        # Agent props
-                       num_actions = 2,
-                       size_state_space = np.array([100]),
-                       gamma_damping = 0.00001,
-                       eta_glow_damping = 0.1,
-                       g_update = 's',
-                       initial_prob_distr = np.array([[],[]]),
-                       policy_type = 'standard', 
-                       beta_softmax = 3,  
-                       fixed_policy = np.array([[],[]]),
-                       max_no_H_update = int(1e3),
-                       h_mat_allT = False, 
-                       reset_after_reward = True,
-                       # When we want N_agent != number of max cores, we use this to make few runs
-                       # over the selected number of cores, given by N_agents.
-                       num_runs = None 
+                       num_actions = 2, # Number of actions
+                       size_state_space = np.array([100]), # Size of the state space
+                       gamma_damping = 0.00001, # PS damping factor
+                       eta_glow_damping = 0.1, # PS glow damping factor
+                       g_update = 's', # Type of G update. Can be 's' (sum) or 'r' (reset)
+                       initial_prob_distr = np.array([[],[]]), # Initial probability distribution for the H matrix
+                       policy_type = 'standard', # Policy type. Can be 'standard' or 'softmax'
+                       beta_softmax = 3,  # Softmax temperature if sotfmax policy is used
+                       fixed_policy = np.array([[],[]]), # Fixed policy for the agent to follow
+                       max_no_H_update = int(1e3), # Max number of steps without updating the H matrix. After this number, the full H matrix is updated
+                       h_mat_allT = False, # If True saves the h_mat at desired time
+                       when_save_h_mat = 1, # If h_mat_allT = True, sets the time where h-matrix is saved    
+                       reset_after_reward = True, # If True, the agents performs a reset after getting a target                       
+                       num_runs = None # When we want N_agent != number of max cores, we use this to make few runs over the selected number of cores, given by N_agents.
                       ):
+    '''
+    Launches parallel trainings of forager agents in a 1D Reset environment.
+    '''
 
     if num_runs is None:
         total_agents = N_agents
@@ -465,7 +476,7 @@ def run_agents_reset_1D(episodes, time_ep, N_agents,
                                       initial_prob_distr,fixed_policy,max_no_H_update,g_update)
             env = ResetEnv_1D(L, D)
             
-            rews, mat = train_loop_reset(episodes, time_ep, agent, env, h_mat_allT, reset_after_reward)            
+            rews, mat = train_loop_reset(episodes, time_ep, agent, env, h_mat_allT, when_save_h_mat, reset_after_reward)            
      
             # print(rews.shape, rews[0], rews[0].dtype)
             
@@ -495,31 +506,37 @@ def run_agents_reset_1D(episodes, time_ep, N_agents,
         
     return save_rewards, save_h_matrix
 
-# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 23
+# %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 22
 from ..envs.foraging import ResetEnv_2D
 
 
 @maybe_njit(parallel = True)
-def run_agents_reset_2D(episodes, time_ep, N_agents,
+def run_agents_reset_2D(episodes, # Number of episodes
+                        time_ep, # Length of an episode
+                        N_agents, # Number of parallel agents
                      # Environment props
-                     dist_target = 10.0, radius_target = 1.0, D = 1/2,
+                     dist_target = 10.0, # Distance from the origin where the target is located
+                     radius_target = 1.0, # Radius of the target
+                     D = 1/2, # Diffusion coefficient
                      # Agent props
-                     num_actions = 2,
-                     size_state_space = np.array([100]),
-                     gamma_damping = 0.00001,
-                     eta_glow_damping = 0.1,
-                     initial_prob_distr = np.array([[],[]]),
-                     policy_type = 'standard', 
-                     beta_softmax = 3,  
-                     fixed_policy = np.array([[],[]]),
-                     max_no_H_update = int(1e3),
-                     h_mat_allT = False, when_save_h_mat = 1,
-                     reset_after_reward = True,
-                     g_update = 's',
-                    # When we want N_agent != number of max cores, we use this to make few runs
-                    # over the selected number of cores, given by N_agents.
-                    num_runs = None                         
+                     num_actions = 2, # Number of actions
+                     size_state_space = np.array([100]), # Size of the state space
+                     gamma_damping = 0.00001, # PS damping factor
+                     eta_glow_damping = 0.1, # PS glow damping factor
+                     initial_prob_distr = np.array([[],[]]), # Initial probability distribution for the H matrix
+                     policy_type = 'standard',  # Policy type. Can be 'standard' or 'softmax'
+                     beta_softmax = 3,  # Softmax temperature if softmax policy is used
+                     fixed_policy = np.array([[],[]]), # Fixed policy for the agent to follow
+                     max_no_H_update = int(1e3), # Max number of steps without updating the H matrix. After this number, the full H matrix is updated
+                     h_mat_allT = False, # If True saves the h_mat at desired time
+                     when_save_h_mat = 1, # If h_mat_allT = True, sets the time where h-matrix is saved
+                     reset_after_reward = True, # If True, the agents performs a reset after getting a target
+                     g_update = 's', # Type of G update. Can be 's' (sum) or 'r' (reset)
+                     num_runs = None # When we want N_agent != number of max cores, we use this to make few runs over the selected number of cores, given by N_agents.                        
                       ):
+    '''
+    Launches parallel trainings of forager agents in a 2D Reset environment.
+    '''
     
     save_rewards = np.zeros((N_agents, episodes))
     if h_mat_allT:
