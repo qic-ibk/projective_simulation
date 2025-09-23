@@ -376,7 +376,7 @@ def train_loop_reset(episodes, time_ep, agent, env, h_mat_allT = False, when_sav
     return (save_rewards/time_ep, policy_t) if h_mat_allT else (save_rewards/time_ep, agent.h_matrix)
 
 # %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 18
-from projective_simulations.envs.foraging import ResetEnv_1D
+from ..envs.foraging import ResetEnv_1D
 
 
 
