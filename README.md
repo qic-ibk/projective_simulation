@@ -27,10 +27,10 @@ their deliberation corresponds to **random walks on a clip network
 (graph)**, which provides an interpretable route to physical
 realizations and analysis.
 
-This library all the necessary tools to develop, deploy and train PS
+This library provides all the necessary tools to develop, deploy, and train PS
 agents in a variety of environments. Its content spans from entry-level
-[tutorials](nbs/tutorials/index_tutorials.ipynb) that introduce the core
-principles of PS to cutting-edge [research](nbs/webpage/research.ipynb) on
+[tutorials](https://qic-ibk.github.io/projective_simulation/tutorials/index_tutorials.html) that introduce the core
+principles of PS to cutting-edge [research](https://qic-ibk.github.io/projective_simulation/webpage/research.html) on
 the latest developments and applications. It is actively developed by
 the [QIC group at UIBK](https://www.uibk.ac.at/en/th-physik/qic-group/).
 
@@ -46,20 +46,23 @@ This will also install the necessary library requirements.
 
 ## Getting Started
 
-To begin exploring Projective Simulation, we recommend to start with the
-[tutorials](tutorials/index_tutorials.ipynb), which contain from the
-basics to more advance applications.
+To begin exploring Projective Simulation, we recommend starting with the
+[tutorials](https://qic-ibk.github.io/projective_simulation/tutorials/index_tutorials.html), which cover topics from the
+basics to more advanced applications.
 
 If you want to develop or deploy PS agents, please check the
-[documetation](lib_nbs/index_docs.ipynb).
+[documentation](https://qic-ibk.github.io/projective_simulation/lib_nbs/index_docs.ipynb).
 
 ## Citing
 
 If you found this package useful and used it in your projects, you can
-either the particular PS paper that you found most useful (see a list
-[here](figs/PS_mindmap.html)) or use the following to cite the whole
+cite either the particular PS paper that you found most useful (see a list
+[here](https://qic-ibk.github.io/projective_simulation/figs/PS_mindmap.html)) or use the following to cite the whole
 library:
 
 ``` python
-here will be some zenodo link
+soon
 ```
+
+
+
