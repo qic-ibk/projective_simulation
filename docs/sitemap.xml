@@ -1,59 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://qic-uibk.github.io/PS/tutorials/applications/foraging/learning_to_forage.html</loc>
+    <lastmod>2025-09-24T11:27:45.978Z</lastmod>
+  </url>
+  <url>
+    <loc>https://qic-uibk.github.io/PS/tutorials/applications/foraging/learning_to_reset.html</loc>
+    <lastmod>2025-09-24T11:27:46.399Z</lastmod>
+  </url>
+  <url>
     <loc>https://qic-uibk.github.io/PS/tutorials/index_tutorials.html</loc>
-    <lastmod>2025-08-31T09:27:12.544Z</lastmod>
+    <lastmod>2025-09-24T11:27:46.611Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/tutorials/contributing/contributing.html</loc>
-    <lastmod>2025-08-31T09:27:12.788Z</lastmod>
+    <lastmod>2025-09-24T11:27:46.884Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/tutorials/contributing/using_git.html</loc>
-    <lastmod>2025-08-31T09:27:13.033Z</lastmod>
+    <lastmod>2025-09-24T11:27:47.112Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/tutorials/learning_ps/introduction_to_ps.html</loc>
-    <lastmod>2025-08-31T09:27:13.390Z</lastmod>
+    <lastmod>2025-09-24T11:27:47.561Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/index.html</loc>
-    <lastmod>2025-08-31T09:27:13.634Z</lastmod>
+    <lastmod>2025-09-24T11:27:47.784Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/webpage/research.html</loc>
-    <lastmod>2025-08-31T09:27:13.862Z</lastmod>
+    <lastmod>2025-09-24T11:27:48.019Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/lib_nbs/ECMs/priming.html</loc>
-    <lastmod>2025-08-31T09:27:14.106Z</lastmod>
+    <lastmod>2025-09-24T11:27:48.295Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/lib_nbs/ECMs/core.html</loc>
-    <lastmod>2025-08-31T09:27:14.324Z</lastmod>
+    <lastmod>2025-09-24T11:27:48.565Z</lastmod>
+  </url>
+  <url>
+    <loc>https://qic-uibk.github.io/PS/lib_nbs/envs/foraging_envs.html</loc>
+    <lastmod>2025-09-24T11:27:48.884Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/lib_nbs/envs/core.html</loc>
-    <lastmod>2025-08-31T09:27:14.571Z</lastmod>
+    <lastmod>2025-09-24T11:27:49.154Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/lib_nbs/index_docs.html</loc>
-    <lastmod>2025-08-31T09:27:14.765Z</lastmod>
+    <lastmod>2025-09-24T11:27:49.392Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/lib_nbs/methods/lib_helpers.html</loc>
-    <lastmod>2025-08-31T09:27:14.989Z</lastmod>
+    <lastmod>2025-09-24T11:27:49.627Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/lib_nbs/methods/preprocessors.html</loc>
-    <lastmod>2025-08-31T09:27:15.206Z</lastmod>
+    <lastmod>2025-09-24T11:27:49.864Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/lib_nbs/methods/transforms.html</loc>
-    <lastmod>2025-08-31T09:27:15.412Z</lastmod>
+    <lastmod>2025-09-24T11:27:50.097Z</lastmod>
+  </url>
+  <url>
+    <loc>https://qic-uibk.github.io/PS/lib_nbs/agents/foraging_agents.html</loc>
+    <lastmod>2025-09-24T11:27:50.445Z</lastmod>
   </url>
   <url>
     <loc>https://qic-uibk.github.io/PS/lib_nbs/agents/core.html</loc>
-    <lastmod>2025-08-31T09:27:15.676Z</lastmod>
+    <lastmod>2025-09-24T11:27:50.726Z</lastmod>
   </url>
 </urlset>
