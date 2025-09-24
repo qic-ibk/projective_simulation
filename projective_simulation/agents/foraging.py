@@ -6,6 +6,7 @@ __all__ = ['NUMBA_ACTIVATED', 'failed_numba_import', 'maybe_jitclass', 'maybe_nj
 
 # %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 5
 import numpy as np
+import warnings
 
 # %% ../../nbs/lib_nbs/agents/foraging_agents.ipynb 6
 # This library has been developed for its use in Numba. However, its use is more complicated than the vanilla numpy. To avoid
@@ -23,7 +24,6 @@ if NUMBA_ACTIVATED:
         from numba import prange as _range
         from numba import njit as _njit
     except:
-        import warnings
         warnings.warn("numba library not installed. If you want to speed up you agents.foraging, please install it manually. You then need to fix the enviromental variable %env NUMBA_ACTIVATED = True",
                       UserWarning)
         failed_numba_import = True
@@ -295,6 +295,10 @@ class Forager():
         return probability_distr
     
     def learn(self, reward):
+        warnings.warn('The learn method is deprecated. Please use update(reward) instead.', DeprecationWarning)
+        self.update(reward)
+
+    def update(self, reward):
         """
         Given a reward, this method updates the h matrix.
 
