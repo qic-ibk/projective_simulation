@@ -22,52 +22,61 @@ website:
   repo-url: "https://github.com/qic-uibk/projective_simulation/"
   twitter-card: true
   open-graph: true
-  repo-actions: [issue]
+  repo-actions: [source, issue]
+  
   navbar:  
     logo: figs/ps_logo.png
     background: "#f7f1e6ff"
     foreground: "#000000ff"
-    search: true      
-    right:
-      - icon: github
-        href: "https://github.com/qic-uibk/projectivesimulation/"     
-
-
-
-        
-  sidebar: 
-    foreground: "#000000ff"
-    style: floating
-    collapse-level: 1
-    contents:
+    search: true 
+    left:
       - text: Get started
         href: index.ipynb
-      - section: Documentation
+      - text: Documentation
         href: lib_nbs/index_docs.ipynb
-        contents:
-            - section: Agents
-              contents:
-                  - lib_nbs/agents/01_core.ipynb            
-                  - lib_nbs/agents/foraging_agents.ipynb            
-            - section: ECMs
-              contents:
-                - lib_nbs/ECMs/01_core.ipynb
-                - lib_nbs/ECMs/02_priming.ipynb
-            - section: Environments
-              contents:
-                - lib_nbs/envs/01_core.ipynb
-                - lib_nbs/envs/foraging_envs.ipynb
-      - section: Tutorials
+      - text: Tutorials
         href: tutorials/index_tutorials.ipynb
-        contents:
-            - section: Learning PS
-              contents: 
-                  - tutorials/learning_ps/00_Introduction_to_PS.ipynb
-            - section: Applications
-              contents:
-                  - tutorials/applications/00_optimal_search.ipynb
-            - section: Contributing
-              contents:
-                  - tutorials/contributing/00_contributing.ipynb
       - text: Research
         href: webpage/research.ipynb
+    right:
+      - icon: github
+        href: "https://github.com/qic-uibk/projectivesimulation/"
+        
+  sidebar:
+
+    # Group 2 — Documentation
+    - title: Documentation
+      foreground: "#000000ff"
+      style: docked
+      collapse-level: 1
+      contents:
+        - lib_nbs/index_docs.ipynb
+        - section: Agents
+          contents:
+            - lib_nbs/agents/01_core.ipynb
+            - lib_nbs/agents/foraging_agents.ipynb
+        - section: ECMs
+          contents:
+            - lib_nbs/ECMs/01_core.ipynb
+            - lib_nbs/ECMs/02_priming.ipynb
+        - section: Environments
+          contents:
+            - lib_nbs/envs/01_core.ipynb
+            - lib_nbs/envs/foraging_envs.ipynb
+
+    # Group 3 — Tutorials
+    - title: Tutorials
+      foreground: "#000000ff"
+      style: docked
+      collapse-level: 1
+      contents:
+        - tutorials/index_tutorials.ipynb
+        - section: Learning PS
+          contents:
+            - tutorials/learning_ps/00_Introduction_to_PS.ipynb
+        - section: Applications
+          contents:
+            - tutorials/applications/foraging/02_learning_to_reset.ipynb
+        - section: Contributing
+          contents:
+            - tutorials/contributing/00_contributing.ipynb
