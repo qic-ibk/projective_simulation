@@ -124,6 +124,8 @@ class Forager():
         This is an updated version from the one used in the original paper (https://doi.org/10.1088/1367-2630/ad19a8), 
         taking into account the improvements made to the H and G matrices proposed by Michele Caraglio in our paper
         (https://doi.org/10.1039/D3SM01680C).
+
+        See self.act 
         '''
         
         self.agent_state = 0
@@ -346,15 +348,16 @@ class Forager():
         Parameters
         ----------
         action : int (0, 1)
-            1 if it changes direction, 0 otherwise
+            0 for actions that increase the counter
+            and != 0 for actions that reset the counter.
         """
         
-        # If the agent changes direction   
-        if action == 1:
-            self.agent_state = 0
+        # If the agent continues
+        if action == 0:
+            self.agent_state += 1
+        # If the agent turns / resets /... i.e. any action that resets the counter
         else:
-            self.agent_state += 1  
-            
+            self.agent_state = 0  
     
     def get_state(self):  
         ''' simplified to case of single forager. Returns list because is what deliberate needs'''
