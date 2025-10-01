@@ -74,7 +74,42 @@
     "href": "tutorials/contributing/contributing.html",
     "title": "Contribution guide",
     "section": "",
-    "text": "1. The nbdev package\nThis library is based on nbdev. This is a nice tutorial on everything you need to learnd about it.\nIn the rest of this notebook I will highlight the minimum needed from the library to contribute to the projective_simulation. In particular, I will show you the few magic commands that will allow us to create a python package from notebooks.\n\n\n2. Installation\nBefore starting to write your code, use pipto install the library. To do so, clone the repository and do a local installation of the package. For that, you just need to go to the repo’s folder and run:\npip install -e .\n\n\n3. Write new code\nNow that you have the library installed, let’s write some new code using Jupyter Notebooks. For the moment, let’s do something simple and talk later about how to properly structure the library. Let’s consider that I want to create, inside the library projective_simulation, a new module utils in which I will gather few useful functions.\nTo tell nbdev that I want this notebook to do the previous, we use the default_exp magic command in the following way:\n\nImportant: any nbdev magic command must be preceded by #|\n\nThis will ensure the objects we create within this notebook will be exported to a .py file called contributing_guide.py within the package folder. You can find the latter in the parent repo folder with the name projective_simulation (the chosen name for the library).\n\nImportant: never write in those .py, as their content is automatically generated from the notebooks and any change there will be overwritten :) .\n\nNow let’s write some proper code! We will create a function that we want to be contained in the module utils. To do so, we use the command #| export to tell nbdev that we want the content of this to go to the current module:\n\nsource\n\nrandom_func\n\n random_func (k)\n\nWe need to actively export the current state of the notebook. To do so, you can either run nbdev_export in your terminal (inside the repo folder) or run the following cell:\n\nImportant 1: nbdev_export exports the current state of the notebooks in you library. This means the last saved version! While notebooks usually autosave, it is good practice to save the notebook before running the command.\n\n\nImportant 2: because I don’t want this command to go to the module, I don’t put the #| export command in the cell.\n\n\nimport nbdev; nbdev.nbdev_export()\n\nAnd that’s it! If you are curious, you can go to projective_simulation/utils.py and see that the content of the file is exactly the one in the cell above.\n\n\n\n3. Importing generated functions\nBecause the package has been installed through pip, we can now import the function we just created. Let’s see how. First, restart the notebook’s kernel. Now, you can import the random_func function as:\n\nfrom projective_simulation.contributing_guide import random_func\n\n\nrandom_func(2)\n\n0.31480691257004256\n\n\n\n\n4. Contributing to the repo\nNotebooks have a lot of useless metadata in them (i.e. the count of the cell execution, the environment you are using,…). This would make impossible contribute to a shared repo, as for instance different contributors may be using different environment names, which would end up in a conflict. To avoid this, nbdev has created hooks that deal with this problem (check their documentation if you want to know details). For now, you just need to do the following:\n\nAfter installing nbdev (should have been done automatically when installing projective_simulation as I put it as a requirement), run the following in your terminal, inside the repo’s folder:\n\nnbdev_install_hooks\n\nMOST IMPORTANTLY, before pushing any changes to the origin, be sure to have done two things:\n\nExport the changes you did in the notebook (see above)\nClean the metadata of your notebooks using the command nbdev_clean\n\n\n\n\n5. Git considerations\nFor a brief tutorial on using git and project protocols, please see 01_using_git in the same folder as this notebook."
+    "text": "To make it easier to develop PS agents and structures, we provide Abstract classes for Agents and Episodic and Compositional Memories (ECM) designed to guide you through the process. These classes include some compulsory modules that must be implemented for your code to qualify as a “true” PS module. Let’s review them so you can start coding your own PS agents!\nIf you are not yet familiar with PS or how they learn in a Reinforcement Learning environment, we recommend starting with this tutorial.\n\n\nIn the PS framework, agents must implement two compulsory modules: - deliberate: typically returns an action given an input state\n- update: updates the internal structure of your agent\nThat’s it, the rest is up to you. Let’s look at an example. First, import the Abstract_Agent class from the library:\n\nfrom projective_simulation.agents.core import Abstract_Agent\n\nAnd now let’s create our new shinny agent. To illustrate what happens when something goes wrong, let’s “forget” to define the module update:\n\nclass my_new_agent(Abstract_Agent):\n    \n    def __init__(self, num_actions):\n        # Takes a random action\n        self.num_actions = num_actions\n\n    def deliberate(self):\n        return np.random.randint(self.num_actions)\n\nNow let’s call our new class and see what happens:\n\nagent = my_new_agent(3)\n\nTypeError: Cannot instantiate class my_new_agent because it is missing method(s): update.\nPlease implement all abstract methods (see documentation of class for details).\n\n\nUps! As you see, and as expected, the agent is missing the update module. Let’s correct that and double check:\n\nclass my_new_BETTER_agent(Abstract_Agent):\n    \n    def __init__(self, num_actions):\n        self.num_actions = num_actions\n\n    def deliberate(self):\n        # Takes a random action\n        return np.random.randint(self.num_actions)\n\n    def update(self):\n            pass\n\n\nagent = my_new_BETTER_agent(3)\n\n\nPS: As you can see, the framework does not require the modules to actually perform any operations—only that they are defined. For example, if your research focuses on agents that do not update themselves, you can simply define a dummy update module as shown above.\n\n\n\n\nThe second main building block of the library is the Episodic and Compositional Memory (ECM). An ECM is typically represented as a graph that stores percepts, encoding observations, internal knowledge, or actions. However, this library does not enforce any specific ECM structure.\nThe only compulsory module is:\n\nsample: typically used to generate an action by performing a random walk through the ECM.\n\nLet’s now briefly review what a typical ECM looks like, based on the abstract ECM class (a simplification of projective_simulation.ECMs.core.Two_Layer).\n\nfrom projective_simulation.ECMs.core import Abstract_ECM\n\n\nclass ECM_2layers(Abstract_ECM):\n\n    def __init__(self,\n                 num_actions, # number of actions the agent performs from this ECM\n                 num_states # number of different states of the environment\n                ):\n        # Let's define a \"two-layer\" h-matrix (see learning PS tutorial for more).\n        self.hmatrix = np.random.rand(num_states, num_actions)\n\n    def sample(self, state):\n        # Sample greedly the action with the highest h-value\n        h_values = self.hmatrix[state]\n        action = h_values.argmax()  \n        return action\n\n\necm = ECM_2layers(5,5)\necm.sample(2)\n\nnp.int64(4)\n\n\nAnd that is all that is fixed by the framwork, from here you are free to create agents and ECMs at will!"
+  },
+  {
+    "objectID": "tutorials/contributing/contributing.html#the-nbdev-package",
+    "href": "tutorials/contributing/contributing.html#the-nbdev-package",
+    "title": "Contribution guide",
+    "section": "The nbdev package",
+    "text": "The nbdev package\nThis library is based on nbdev. This is a nice tutorial on everything you need to learnd about it.\nIn the rest of this notebook we will highlight the minimum needed from the library to contribute to the projective_simulation. In particular, we will show you the few magic commands that will allow us to create a python package from notebooks."
+  },
+  {
+    "objectID": "tutorials/contributing/contributing.html#installation",
+    "href": "tutorials/contributing/contributing.html#installation",
+    "title": "Contribution guide",
+    "section": "Installation",
+    "text": "Installation\nBefore starting to write your code, use pipto install the library. To do so, clone the repository and do a local installation of the package. For that, you just need to go to the repo’s folder and run:\npip install -e ."
+  },
+  {
+    "objectID": "tutorials/contributing/contributing.html#write-new-code",
+    "href": "tutorials/contributing/contributing.html#write-new-code",
+    "title": "Contribution guide",
+    "section": "Write new code",
+    "text": "Write new code\nNow that you have the library installed, let’s write some new code using Jupyter Notebooks. For the moment, let’s do something simple and talk later about how to properly structure the library. Let’s consider that we want to create, inside the library projective_simulation, a new module utils in which we will gather few useful functions.\nTo tell nbdev that we want this notebook to do the previous, we use the default_exp magic command in the following way:\n\nImportant: any nbdev magic command must be preceded by #|\n\nThis will ensure the objects we create within this notebook will be exported to a .py file called contributing_guide.py within the package folder. You can find the latter in the parent repo folder with the name projective_simulation (the chosen name for the library).\n\nImportant: never write in those .py, as their content is automatically generated from the notebooks and any change there will be overwritten :) .\n\nNow let’s write some proper code! We will create a function that we want to be contained in the module utils. To do so, we use the command #| export to tell nbdev that we want the content of this to go to the current module:\n\nsource\n\nrandom_func\n\n random_func (k)\n\nWe need to actively export the current state of the notebook. To do so, you can either run nbdev_export in your terminal (inside the repo folder) or run the following cell:\n\nimport nbdev; nbdev.nbdev_export()\n\n\n> **Important 1:** `nbdev_export` exports the current state of the notebooks in you library. This means the last saved version! While notebooks usually autosave, it is good practice to save the notebook before running the command.\n\n> **Important 2:** because I don't want this command to go to the module, I don't put the `#| export` command in the cell.\n\nAnd that’s it! If you are curious, you can go to the repo folder, then projective_simulation/contributing_guide.py and see that the content of the file is exactly the one in the cell above."
+  },
+  {
+    "objectID": "tutorials/contributing/contributing.html#importing-generated-functions",
+    "href": "tutorials/contributing/contributing.html#importing-generated-functions",
+    "title": "Contribution guide",
+    "section": "Importing generated functions",
+    "text": "Importing generated functions\nBecause the package has been installed through pip, we can now import the function we just created. Let’s see how. First, restart the notebook’s kernel. Now, you can import the random_func function as:\n\nfrom projective_simulation.contributing_guide import random_func\n\n\nrandom_func(2)\n\n0.31480691257004256"
+  },
+  {
+    "objectID": "tutorials/contributing/contributing.html#contributing-to-the-repo",
+    "href": "tutorials/contributing/contributing.html#contributing-to-the-repo",
+    "title": "Contribution guide",
+    "section": "Contributing to the repo",
+    "text": "Contributing to the repo\nNotebooks have a lot of useless metadata in them (i.e. the count of the cell execution, the environment you are using,…). This would make impossible contribute to a shared repo, as for instance different contributors may be using different environment names, which would end up in a conflict. To avoid this, nbdev has created hooks that deal with this problem (check their documentation if you want to know details). For now, you just need to do the following:\n\nAfter installing nbdev (should have been done automatically when installing projective_simulation as I put it as a requirement), run the following in your terminal, inside the repo’s folder:\n\nnbdev_install_hooks\n\nMOST IMPORTANTLY, before pushing any changes to the origin, be sure to have done two things:\n\nExport the changes you did in the notebook (see above)\nClean the metadata of your notebooks using the command nbdev_clean"
   },
   {
     "objectID": "tutorials/contributing/using_git.html",
@@ -144,7 +179,7 @@
     "href": "index.html#installation",
     "title": "Projective Simulation",
     "section": "Installation",
-    "text": "Installation\nProjective simulation is available for python>=3.10 via\npip install projective_simulation\nThis will also install all required dependencies.\nIf you find this package useful in your projects, you can either cite the specific PS paper most relevant to your work (see a list here ) or use the following to cite the library as a whole:"
+    "text": "Installation\nProjective simulation is available for python>=3.10 via\npip install projective_simulation\nThis will also install all required dependencies."
   },
   {
     "objectID": "index.html#getting-started",
@@ -154,11 +189,18 @@
     "text": "Getting Started\nTo begin exploring Projective Simulation, we recommend to start with the tutorials, which cover everything from the basics to more advanced applications.\nIf you wish to develop or deploy PS agents, please refer to the documetation."
   },
   {
+    "objectID": "index.html#contributing",
+    "href": "index.html#contributing",
+    "title": "Projective Simulation",
+    "section": "Contributing",
+    "text": "Contributing\nIf you want to contribute to this library, please take a look at the contributing tutorial."
+  },
+  {
     "objectID": "index.html#citing",
     "href": "index.html#citing",
     "title": "Projective Simulation",
     "section": "Citing",
-    "text": "Citing\nIf you find this package useful in your projects, you can either cite the specific PS paper most relevant to your work (see a list here) or use the following to cite the library as a whole:\nhere will be some zenodo link"
+    "text": "Citing\nIf you find this package useful in your projects, you can either cite the specific PS paper most relevant to your work (see a list here) or use the following to cite the library as a whole:\n!soon!"
   },
   {
     "objectID": "webpage/research.html",
@@ -172,14 +214,14 @@
     "href": "webpage/research.html#section",
     "title": "Research",
     "section": "2025",
-    "text": "2025\n\n“Run-and-Tumble Particles Learning Chemotaxis” by N. Tovazzi, G. Muñoz-Gil and M. Caraglio* (2025). In this work we explore the ability of active particles to adapt their run-and-tumble strategy to reach targets, based on their chemotactic response, just as bacteria do in the real world!\n“Learning to reset in target search problems” by G. Muñoz-Gil, H. J. Briegel and M. Caraglio (2025). Here we extended the agents to be able to reset to the origin, a feature that has revolutionize target search problems in the last years."
+    "text": "2025\n\nFree Energy Projective Simulation (FEPS): Active inference with interpretability by Pazem, J., Krumm, M., Vining, A. Q., Fiderer, L. J., & Briegel, H. J. (2025).\nRun-and-Tumble Particles Learning Chemotaxis” by N. Tovazzi, G. Muñoz-Gil and M. Caraglio (2025).\nLearning to reset in target search problems” by G. Muñoz-Gil, H. J. Briegel and M. Caraglio (2025)."
   },
   {
     "objectID": "webpage/research.html#section-1",
     "href": "webpage/research.html#section-1",
     "title": "Research",
     "section": "2024",
-    "text": "2024\n\n“Learning how to find targets in the micro-world: the case of intermittent active Brownian particles” by M. Caraglio, H. Kaur, L. Fiderer, A. López-Incera, H. J. Briegel, T. Franosch, and G. Muñoz-Gil (2024). In this case, we study the ability of agents to learn how to switch from passive to active diffusion to enhance their target search efficiency.\n“Optimal foraging strategies can be learned” by G. Muñoz-Gil, A. López-Incera, L. J. Fiderer and H. J. Briegel (2024). Here we developed agents able to learn how to forage efficiently in environments with multiple targets."
+    "text": "2024\n\nLearning how to find targets in the micro-world: the case of intermittent active Brownian particles by M. Caraglio, H. Kaur, L. Fiderer, A. López-Incera, H. J. Briegel, T. Franosch, and G. Muñoz-Gil (2024).\nOptimal foraging strategies can be learned” by G. Muñoz-Gil, A. López-Incera, L. J. Fiderer and H. J. Briegel (2024)."
   },
   {
     "objectID": "lib_nbs/ECMs/priming.html",
