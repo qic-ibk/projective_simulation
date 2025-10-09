@@ -16,10 +16,12 @@ format:
 
 website:
   title: "Projective Simulation"
-  site-url: "https://qic-uibk.github.io/PS/"
+  site-url: "https://qic-ibk.github.io/projective_simulation/"
+
+  
   description: "Projective Simulation"
   repo-branch: master
-  repo-url: "https://github.com/qic-uibk/projective_simulation/"
+  repo-url: "https://github.com/qic-ibk/projective_simulation/"
   twitter-card: true
   open-graph: true
   repo-actions: [source, issue]
@@ -40,7 +42,7 @@ website:
         href: webpage/research.ipynb
     right:
       - icon: github
-        href: "https://github.com/qic-uibk/projectivesimulation/"
+        href: "https://github.com/qic-ibk/projectivesimulation/"
         
   sidebar:
 
