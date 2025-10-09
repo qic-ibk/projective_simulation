@@ -1,1 +1,1 @@
-Sitemap: https://qic-uibk.github.io/PS/sitemap.xml
+Sitemap: https://qic-ibk.github.io/projective_simulation/sitemap.xml

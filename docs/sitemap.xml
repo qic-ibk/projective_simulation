@@ -1,75 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://qic-uibk.github.io/PS/tutorials/applications/foraging/learning_to_forage.html</loc>
-    <lastmod>2025-10-01T12:23:37.314Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/tutorials/applications/foraging/learning_to_forage.html</loc>
+    <lastmod>2025-10-09T11:53:46.400Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/tutorials/applications/foraging/learning_to_reset.html</loc>
-    <lastmod>2025-10-01T12:23:37.775Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/tutorials/applications/foraging/learning_to_reset.html</loc>
+    <lastmod>2025-10-09T11:53:46.863Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/tutorials/index_tutorials.html</loc>
-    <lastmod>2025-10-01T12:23:37.994Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/tutorials/index_tutorials.html</loc>
+    <lastmod>2025-10-09T11:53:47.119Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/tutorials/contributing/contributing.html</loc>
-    <lastmod>2025-10-01T12:23:38.294Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/tutorials/contributing/contributing.html</loc>
+    <lastmod>2025-10-09T11:53:47.461Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/tutorials/contributing/using_git.html</loc>
-    <lastmod>2025-10-01T12:23:38.563Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/tutorials/contributing/using_git.html</loc>
+    <lastmod>2025-10-09T11:53:47.733Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/tutorials/learning_ps/introduction_to_ps.html</loc>
-    <lastmod>2025-10-01T12:23:38.966Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/tutorials/learning_ps/introduction_to_ps.html</loc>
+    <lastmod>2025-10-09T11:53:48.182Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/index.html</loc>
-    <lastmod>2025-10-01T12:23:39.191Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/index.html</loc>
+    <lastmod>2025-10-09T11:53:48.428Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/webpage/research.html</loc>
-    <lastmod>2025-10-01T12:23:39.414Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/webpage/research.html</loc>
+    <lastmod>2025-10-09T11:53:48.685Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/lib_nbs/ECMs/priming.html</loc>
-    <lastmod>2025-10-01T12:23:39.655Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/lib_nbs/ECMs/priming.html</loc>
+    <lastmod>2025-10-09T11:53:48.983Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/lib_nbs/ECMs/core.html</loc>
-    <lastmod>2025-10-01T12:23:39.933Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/lib_nbs/ECMs/core.html</loc>
+    <lastmod>2025-10-09T11:53:49.255Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/lib_nbs/envs/foraging_envs.html</loc>
-    <lastmod>2025-10-01T12:23:40.248Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/lib_nbs/envs/foraging_envs.html</loc>
+    <lastmod>2025-10-09T11:53:49.573Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/lib_nbs/envs/core.html</loc>
-    <lastmod>2025-10-01T12:23:40.467Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/lib_nbs/envs/core.html</loc>
+    <lastmod>2025-10-09T11:53:49.815Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/lib_nbs/index_docs.html</loc>
-    <lastmod>2025-10-01T12:23:40.702Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/lib_nbs/index_docs.html</loc>
+    <lastmod>2025-10-09T11:53:50.053Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/lib_nbs/methods/lib_helpers.html</loc>
-    <lastmod>2025-10-01T12:23:40.920Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/lib_nbs/methods/lib_helpers.html</loc>
+    <lastmod>2025-10-09T11:53:50.305Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/lib_nbs/methods/preprocessors.html</loc>
-    <lastmod>2025-10-01T12:23:41.144Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/lib_nbs/methods/preprocessors.html</loc>
+    <lastmod>2025-10-09T11:53:50.579Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/lib_nbs/methods/transforms.html</loc>
-    <lastmod>2025-10-01T12:23:41.397Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/lib_nbs/methods/transforms.html</loc>
+    <lastmod>2025-10-09T11:53:50.855Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/lib_nbs/agents/foraging_agents.html</loc>
-    <lastmod>2025-10-01T12:23:41.687Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/lib_nbs/agents/foraging_agents.html</loc>
+    <lastmod>2025-10-09T11:53:51.216Z</lastmod>
   </url>
   <url>
-    <loc>https://qic-uibk.github.io/PS/lib_nbs/agents/core.html</loc>
-    <lastmod>2025-10-01T12:23:41.958Z</lastmod>
+    <loc>https://qic-ibk.github.io/projective_simulation/lib_nbs/agents/core.html</loc>
+    <lastmod>2025-10-09T11:53:51.513Z</lastmod>
   </url>
 </urlset>
