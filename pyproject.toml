@@ -25,7 +25,7 @@ projective_simulation = "projective_simulation._modidx:d"
 version = {attr = "projective_simulation.__version__"}
 
 [tool.setuptools.packages.find]
-include = ["projective_simulation"]
+include = ["projective_simulation", "projective_simulation.*"]
 
 [tool.nbdev]
 doc_path = 'docs'
