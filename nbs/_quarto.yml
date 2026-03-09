@@ -79,7 +79,6 @@ website:
         - section: Learning PS
           contents:
             - tutorials/learning_ps/00_Introduction_to_PS.ipynb
-            - tutorials/learning_ps/01_Memory_Based_State_Estimators.ipynb
         - section: Applications
           contents:
             - tutorials/applications/foraging/02_learning_to_reset.ipynb
