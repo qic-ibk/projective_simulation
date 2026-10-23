@@ -7,6 +7,7 @@ Here you can find a complete list of papers using PS:
 ## 2026
 
 - [Interpreting Quantum Learning Models via Stochastic Processes](https://arxiv.org/abs/2607.17327) by *J. Fankhauser, L. J. Fiderer* and *H. J. Briegel* (2026).
+
 - [Emergent aggregation from collective foraging](https://arxiv.org/abs/2608.28046) by *G. Muñoz-Gil, A. López-Incera, V. Ramsten, G. Volpe, T. Müller* and *H. J. Briegel* (2026).
 
 ## 2025
