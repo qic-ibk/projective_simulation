@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Boxplot Summary – Projective Simulation</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-eddf64b228a5be184341beebcb09aa4e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../style.css">
+<meta property="og:title" content="Boxplot Summary – Projective Simulation">
+<meta property="og:description" content="Projective Simulation">
+<meta property="og:image" content="https://qic-ibk.github.io/projective_simulation/lib_nbs/methods/03_visualizations_files/figure-html/cell-4-output-1.png">
+<meta property="og:site_name" content="Projective Simulation">
+<meta property="og:image:height" content="546">
+<meta property="og:image:width" content="641">
+<meta name="twitter:title" content="Boxplot Summary – Projective Simulation">
+<meta name="twitter:description" content="Projective Simulation">
+<meta name="twitter:image" content="https://qic-ibk.github.io/projective_simulation/lib_nbs/methods/03_visualizations_files/figure-html/cell-4-output-1.png">
+<meta name="twitter:image-height" content="546">
+<meta name="twitter:image-width" content="641">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../figs/ps_logo.png" alt="" class="navbar-logo light-content">
+    <img src="../../figs/ps_logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Projective Simulation</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Get started</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../lib_nbs/index_docs.html"> 
+<span class="menu-text">Documentation</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../tutorials/index_tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../webpage/research.html"> 
+<span class="menu-text">Research</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/qic-ibk/projective_simulation/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#example" id="toc-example" class="nav-link active" data-scroll-target="#example">Example</a>
+  <ul class="collapse">
+  <li><a href="#visualize-memory-filter-performance" id="toc-visualize-memory-filter-performance" class="nav-link" data-scroll-target="#visualize-memory-filter-performance">Visualize Memory Filter Performance</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/qic-ibk/projective_simulation/blob/master/lib_nbs/methods/03_visualizations.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/qic-ibk/projective_simulation/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-page-left" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Boxplot Summary</h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-left">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div id="49f46f7a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-23T11:48:07.419175+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-23T11:48:07.430487+00:00&quot;,&quot;total&quot;:0.011315422999999214}}" data-execution_count="3">
+<hr>
+<p><a href="https://github.com/%7Buser%7D/projective_simulation/blob/master/projective_simulation/methods/visualization.py#L85" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="simulation_boxplot_summary" class="level3">
+<h3 class="anchored" data-anchor-id="simulation_boxplot_summary">simulation_boxplot_summary</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulation_boxplot_summary(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data, param1_values, param2_values, title, ylabel, parameter_names:<span class="bu">list</span><span class="op">=</span>[<span class="st">'Paramter 1'</span>, <span class="st">'Parameter 2'</span>],</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    legend_loc:<span class="bu">int</span><span class="op">=</span><span class="dv">2</span>, legend_cols:<span class="bu">int</span><span class="op">=</span><span class="dv">3</span>, legend_fontsize:<span class="bu">int</span><span class="op">=</span><span class="dv">12</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>data: 3D array, with simulation results. First two dimensions give value of a simulation parameter, third dimension gives the simulation number.</em></p>
+</section>
+</div>
+<div id="87d30023" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-23T11:48:07.435648+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-23T11:48:07.441965+00:00&quot;,&quot;total&quot;:0.006320020999993403}}" data-execution_count="5">
+<hr>
+<p><a href="https://github.com/%7Buser%7D/projective_simulation/blob/master/projective_simulation/methods/visualization.py#L134" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="plot_heatmap" class="level3">
+<h3 class="anchored" data-anchor-id="plot_heatmap">plot_heatmap</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_heatmap(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    matrix:NDArray[numpy.float64], title:<span class="bu">str</span><span class="op">=</span><span class="st">'Expectation of Memory Traces'</span>, xlabel:<span class="bu">str</span><span class="op">=</span><span class="st">'Trace'</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    ylabel:<span class="bu">str</span><span class="op">=</span><span class="st">'Time Step'</span>, color:<span class="bu">str</span><span class="op">=</span><span class="st">'Blues'</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    extent:<span class="bu">tuple</span>[<span class="bu">float</span>, <span class="bu">float</span>, <span class="bu">float</span>, <span class="bu">float</span>] <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>, <span class="co"># sets limits of axis coordinats: [left, right, bottom, top]</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    figsize:<span class="bu">tuple</span>[<span class="bu">float</span>, <span class="bu">float</span>]<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>), xticks:<span class="bu">list</span>[<span class="bu">float</span>] <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>, xtick_labels:<span class="bu">list</span>[<span class="bu">str</span>] <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    yticks:<span class="bu">list</span>[<span class="bu">float</span>] <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>, ytick_labels:<span class="bu">list</span>[<span class="bu">str</span>] <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    ax:matplotlib.axes._axes.Axes <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>, <span class="co"># optional plt axis to draw plot on</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    vmin:<span class="bu">float</span> <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>, <span class="co"># minimum for heatmap colorscale</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    vmax:<span class="bu">float</span> <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>, <span class="co"># maximum for heatmap colorscale</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    label_scale:<span class="bu">float</span><span class="op">=</span><span class="fl">1.0</span>, <span class="co"># multiplier for label sizes</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    colorbar_kwargs:<span class="bu">dict</span>[<span class="bu">str</span>, typing.Any] <span class="op">|</span> <span class="va">None</span><span class="op">=</span>{}, <span class="co"># arguments to pass to colorbar function</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    category_sizes:<span class="bu">list</span>[<span class="bu">int</span>] <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Plots a heatmap of the given matrix using the intensity of a single color,</em> allowing arbitrary colorbar arguments to be passed in as a dictionary.</p>
+</section>
+</div>
+<div id="24ff6379-d507-4bf0-be38-be5158be5c5b" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>test_data <span class="op">=</span> np.random.rand(<span class="dv">5</span>,<span class="dv">7</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>plot_heatmap(test_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03_visualizations_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code></p>
+<div id="f86ea2a7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-23T11:48:07.446570+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-23T11:48:07.452483+00:00&quot;,&quot;total&quot;:0.005916389000006461}}" data-execution_count="7">
+<hr>
+<p><a href="https://github.com/%7Buser%7D/projective_simulation/blob/master/projective_simulation/methods/visualization.py#L228" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="visualize_time_step" class="level3">
+<h3 class="anchored" data-anchor-id="visualize_time_step">visualize_time_step</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> visualize_time_step(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    t, observations, m_expectations, s_expectations, actions, surprise_data, H_matrices, glow_matrices,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    reinforcement_data</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+<p><code>=======</code></p>
+<p><code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; 'SiPS_5.0'</code></p>
+<div id="023048ed" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-23T11:48:07.455144+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-23T11:48:07.459314+00:00&quot;,&quot;total&quot;:0.004173409999992828}}" data-execution_count="9">
+<hr>
+<p><a href="https://github.com/%7Buser%7D/projective_simulation/blob/master/projective_simulation/methods/visualization.py#L311" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="plot_circular_network" class="level3">
+<h3 class="anchored" data-anchor-id="plot_circular_network">plot_circular_network</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_circular_network(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    colors:<span class="bu">list</span>, highlight_index:<span class="bu">int</span><span class="op">=</span><span class="va">None</span>, ax:NoneType<span class="op">=</span><span class="va">None</span>, figwidth:<span class="bu">int</span><span class="op">=</span><span class="dv">4</span>, node_labels:NoneType<span class="op">=</span><span class="va">None</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Plot a circular network where each node is colored according to the <code>colors</code> list,</em> and the node at <code>highlight_index</code> has a bright green border.</p>
+</section>
+</div>
+<section id="example" class="level2">
+<h2 class="anchored" data-anchor-id="example">Example</h2>
+<div id="153a9149-1b42-4c57-9c95-e57feddd4b1f" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plot_circular_network(colors <span class="op">=</span> [<span class="st">"green"</span>, <span class="st">"lightgrey"</span>, <span class="st">"lightgrey"</span>, <span class="st">"blue"</span>, <span class="st">"lightgrey"</span>, <span class="st">"lightgrey"</span>], highlight_index <span class="op">=</span> <span class="dv">2</span>, figwidth <span class="op">=</span> <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03_visualizations_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code></p>
+<p>from matplotlib.colors import ListedColormap</p>
+<p>def plot_percepts( percepts, colormap, ax=None, figsize=(2, 8), tick_fontsize=10, label_fontsize=12, title_fontsize=14, title=“Percepts”, xticks=None, xtick_labels=None, yticks=None, ytick_labels=None, **imshow_kwargs ): if ax is None: fig, ax = plt.subplots(figsize=figsize) show = True else: fig = ax.figure show = False # Don’t show if plotting to existing axis</p>
+<pre><code>T = np.shape(percepts)[0]
+n_percept_features = np.shape(percepts)[1]
+
+extent = (0, n_percept_features, T, 0)  # left, right, bottom, top
+
+if colormap is None:
+    ax.imshow(percepts, aspect="auto", interpolation='nearest', extent=extent,**imshow_kwargs)
+else:
+    cmap = ListedColormap(colormap)
+    ax.imshow(percepts, cmap=cmap, aspect="auto", interpolation='nearest', vmin=0, vmax=len(colormap)-1, extent=extent,**imshow_kwargs)
+
+ax.set_title(title, fontsize=title_fontsize)
+ax.set_ylabel("Time Step", fontsize=label_fontsize)
+ax.invert_yaxis()
+
+if xticks is not None:
+    ax.set_xticks(xticks)
+    ax.set_xlabel("Feature", fontsize=label_fontsize)
+    if xtick_labels is not None:
+        ax.set_xticklabels(xtick_labels, fontsize=tick_fontsize)
+else:
+    ax.set_xticks([])
+
+if yticks is None:
+    yticks = np.arange(T)
+    ax.set_yticks(yticks + 0.5)
+    # Use np.linspace to select at most 5 tick labels if ncols &gt; 10
+    if ytick_labels is None:
+        if T &gt; 10:
+            idxs = np.linspace(0, T - 1, num=5, dtype=int)
+            ytick_labels = [str(i+1) if i in idxs else "" for i in yticks]
+        else:
+            ytick_labels = [str(i+1) for i in yticks]
+    ax.set_yticklabels(ytick_labels, fontsize=tick_fontsize)
+else:
+    ax.set_yticks(yticks)
+    if ytick_labels is not None:
+        ax.set_yticklabels(ytick_labels, fontsize=tick_fontsize)
+
+if show:
+    plt.show()
+else:
+    return ax</code></pre>
+<p><code>=======</code></p>
+<section id="visualize-memory-filter-performance" class="level3">
+<h3 class="anchored" data-anchor-id="visualize-memory-filter-performance">Visualize Memory Filter Performance</h3>
+<div id="77e7b757" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-23T11:48:07.462446+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-23T11:48:07.466977+00:00&quot;,&quot;total&quot;:0.004534321999997815}}" data-execution_count="11">
+<hr>
+<p><a href="https://github.com/%7Buser%7D/projective_simulation/blob/master/projective_simulation/methods/visualization.py#L369" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="plot_percepts" class="level3">
+<h3 class="anchored" data-anchor-id="plot_percepts">plot_percepts</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_percepts(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    percepts, colormap, ax:NoneType<span class="op">=</span><span class="va">None</span>, figsize:<span class="bu">tuple</span><span class="op">=</span>(<span class="dv">2</span>, <span class="dv">8</span>), tick_fontsize:<span class="bu">int</span><span class="op">=</span><span class="dv">10</span>, label_fontsize:<span class="bu">int</span><span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    title_fontsize:<span class="bu">int</span><span class="op">=</span><span class="dv">14</span>, title:<span class="bu">str</span><span class="op">=</span><span class="st">'Percepts'</span>, xticks:NoneType<span class="op">=</span><span class="va">None</span>, xtick_labels:NoneType<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    yticks:NoneType<span class="op">=</span><span class="va">None</span>, ytick_labels:NoneType<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>imshow_kwargs</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+<p><code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; 'SiPS_5.0'</code></p>
+<div id="e82fcb1a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>percepts <span class="op">=</span> np.array([[<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>],[<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>],[<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">0</span>],[<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">1</span>],[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">0</span>],[<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">1</span>]])</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>colormap <span class="op">=</span> [<span class="st">'red'</span>, <span class="st">'green'</span>, <span class="st">'blue'</span>]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>plot_percepts(percepts, colormap)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03_visualizations_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="708d0c1c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-23T11:48:07.471454+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-23T11:48:07.477267+00:00&quot;,&quot;total&quot;:0.005816421999995214}}" data-execution_count="13">
+<hr>
+<p><a href="https://github.com/%7Buser%7D/projective_simulation/blob/master/projective_simulation/methods/visualization.py#L436" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="plot_surprise_bar" class="level3">
+<h3 class="anchored" data-anchor-id="plot_surprise_bar">plot_surprise_bar</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_surprise_bar(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    surprise, T, ax:NoneType<span class="op">=</span><span class="va">None</span>, stationary_entropy:NoneType<span class="op">=</span><span class="va">None</span>, predictive_entropy:NoneType<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    bar_colors:NoneType<span class="op">=</span><span class="va">None</span>, yticks:NoneType<span class="op">=</span><span class="va">None</span>, ytick_labels:NoneType<span class="op">=</span><span class="va">None</span>, stacked:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    barh_kwargs:NoneType<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Plot the surprise bar plot for memory filter performance.</em></p>
+</section>
+</div>
+<div id="4b947938" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-23T11:48:07.481752+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-23T11:48:07.487462+00:00&quot;,&quot;total&quot;:0.005712649000003012}}" data-execution_count="15">
+<hr>
+<p><a href="https://github.com/%7Buser%7D/projective_simulation/blob/master/projective_simulation/methods/visualization.py#L518" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="memory_filter_performance" class="level3">
+<h3 class="anchored" data-anchor-id="memory_filter_performance">memory_filter_performance</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> memory_filter_performance(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    memory_data:<span class="bu">dict</span>[<span class="bu">str</span>, typing.Any], observed_percepts:NDArray[numpy.int64],</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    colormap:<span class="bu">list</span>[<span class="bu">str</span>] <span class="op">|</span> NDArray[numpy.str_] <span class="op">|</span> <span class="va">None</span>, stationary_entropy:<span class="bu">float</span> <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    predictive_entropy:<span class="bu">float</span> <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>, stacked:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, bar_colors:<span class="bu">list</span>[<span class="bu">str</span>] <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    title:<span class="bu">str</span><span class="op">=</span><span class="st">'Posterior Belief'</span>, percept_kwargs:<span class="bu">dict</span>[<span class="bu">str</span>, typing.Any]<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    heatmap_kwargs:<span class="bu">dict</span>[<span class="bu">str</span>, typing.Any]<span class="op">=</span><span class="va">None</span>, surprise_kwargs:<span class="bu">dict</span>[<span class="bu">str</span>, typing.Any]<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+<p><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code></p>
+<p><code>=======</code></p>
+<div id="a563a06c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-23T11:48:07.487808+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-23T11:48:08.037621+00:00&quot;,&quot;total&quot;:0.5498192889999984}}" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> projective_simulation.ECMs.state_estimators <span class="im">import</span> Associative_Memory</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> projective_simulation.envs.factorized_POMDPs <span class="im">import</span> List_Sequencer</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>percept_sequence <span class="op">=</span> List_Sequencer(item_category_size<span class="op">=</span><span class="dv">3</span>,item_size<span class="op">=</span><span class="dv">3</span>,series_length<span class="op">=</span><span class="dv">4</span>, num_series <span class="op">=</span> <span class="dv">3</span>).percept_sequence</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>trace_network <span class="op">=</span> Associative_Memory(memory_capacity<span class="op">=</span><span class="bu">len</span>(percept_sequence),memory_bias<span class="op">=</span><span class="fl">0.001</span>,fading_rate<span class="op">=</span><span class="fl">0.005</span>,surprise_factor<span class="op">=</span><span class="fl">0.95</span>,consolidation_rate<span class="op">=</span><span class="fl">0.1</span>,reassociation_rate<span class="op">=</span><span class="fl">0.15</span>,reencoding_rate<span class="op">=</span><span class="fl">0.15</span>, category_sizes<span class="op">=</span>[<span class="dv">4</span>]<span class="op">*</span><span class="dv">3</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>trace_network.prepare_data_storage(data_record<span class="op">=</span>[<span class="st">"all"</span>], record_until<span class="op">=</span><span class="bu">len</span>(percept_sequence))</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(percept_sequence)):</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    trace_network.sample(percept_sequence[t])</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>memory_filter_performance(trace_network.data_dic, percept_sequence, colormap <span class="op">=</span> [<span class="st">'black'</span>, <span class="st">'green'</span>, <span class="st">'blue'</span>, <span class="st">'red'</span>], surprise_kwargs<span class="op">=</span>{<span class="st">"ytick_overide"</span>:<span class="va">True</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>No stationary_expectations given, using uniform distributions for all sensors</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="03_visualizations_files/figure-html/cell-13-output-2.png" width="789" height="589" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; 'SiPS_5.0'</code></p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/qic-ibk\.github\.io\/projective_simulation\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/qic-ibk/projective_simulation/blob/master/lib_nbs/methods/03_visualizations.ipynb" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/qic-ibk/projective_simulation/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
