@@ -39,7 +39,7 @@ website:
       - text: Tutorials
         href: tutorials/index_tutorials.ipynb
       - text: Research
-        href: webpage/research.ipynb
+        href: webpage/research.md
     right:
       - icon: github
         href: "https://github.com/qic-ibk/projective_simulation/"
