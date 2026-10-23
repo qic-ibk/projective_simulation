@@ -42,7 +42,7 @@ website:
         href: webpage/research.ipynb
     right:
       - icon: github
-        href: "https://github.com/qic-ibk/projectivesimulation/"
+        href: "https://github.com/qic-ibk/projective_simulation/"
         
   sidebar:
 
