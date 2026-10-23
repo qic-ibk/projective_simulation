@@ -28,6 +28,5 @@ version = {attr = "projective_simulation.__version__"}
 include = ["projective_simulation"]
 
 [tool.nbdev]
-doc_path = 'docs'
 branch = 'master'
 custom_sidebar = true
