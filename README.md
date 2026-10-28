@@ -48,8 +48,10 @@ cite either the particular PS paper that you found most useful (see a list
 [here](https://qic-ibk.github.io/projective_simulation/figs/PS_mindmap.html)) or use the following to cite the whole
 library:
 
-``` python
-soon
+``` 
+Projective Simulation Python Library  
+Gorka Muñoz-Gil, Alexander Vining, Joséphine Pazem, Lukas Fiderer and Hans J. Briegel (2026). 
+DOI: https://doi.org/10.5281/zenodo.23725476
 ```
 
 
