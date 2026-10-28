@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Research – Projective Simulation</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-eddf64b228a5be184341beebcb09aa4e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../style.css">
+<meta property="og:title" content="Research – Projective Simulation">
+<meta property="og:description" content="Projective Simulation">
+<meta property="og:site_name" content="Projective Simulation">
+<meta name="twitter:title" content="Research – Projective Simulation">
+<meta name="twitter:description" content="Projective Simulation">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../figs/ps_logo.png" alt="" class="navbar-logo light-content">
+    <img src="../figs/ps_logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Projective Simulation</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Get started</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../lib_nbs/index_docs.html"> 
+<span class="menu-text">Documentation</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials/index_tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../webpage/research.html" aria-current="page"> 
+<span class="menu-text">Research</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/qic-ibk/projective_simulation/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#section" id="toc-section" class="nav-link active" data-scroll-target="#section">2026</a></li>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1">2025</a></li>
+  <li><a href="#section-2" id="toc-section-2" class="nav-link" data-scroll-target="#section-2">2024</a></li>
+  <li><a href="#section-3" id="toc-section-3" class="nav-link" data-scroll-target="#section-3">2023</a></li>
+  <li><a href="#section-4" id="toc-section-4" class="nav-link" data-scroll-target="#section-4">2021</a></li>
+  <li><a href="#section-5" id="toc-section-5" class="nav-link" data-scroll-target="#section-5">2020</a></li>
+  <li><a href="#section-6" id="toc-section-6" class="nav-link" data-scroll-target="#section-6">2019</a></li>
+  <li><a href="#section-7" id="toc-section-7" class="nav-link" data-scroll-target="#section-7">2018</a></li>
+  <li><a href="#section-8" id="toc-section-8" class="nav-link" data-scroll-target="#section-8">2017</a></li>
+  <li><a href="#section-9" id="toc-section-9" class="nav-link" data-scroll-target="#section-9">2016</a></li>
+  <li><a href="#section-10" id="toc-section-10" class="nav-link" data-scroll-target="#section-10">2015</a></li>
+  <li><a href="#section-11" id="toc-section-11" class="nav-link" data-scroll-target="#section-11">2014</a></li>
+  <li><a href="#section-12" id="toc-section-12" class="nav-link" data-scroll-target="#section-12">2012</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/qic-ibk/projective_simulation/blob/master/webpage/research.md" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/qic-ibk/projective_simulation/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content column-page-left" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Research</h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-left">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Here you can find a complete list of papers using PS:</p>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section">2026</h2>
+<ul>
+<li><p><a href="https://arxiv.org/abs/2607.17327">Interpreting Quantum Learning Models via Stochastic Processes</a> by <em>J. Fankhauser, L. J. Fiderer</em> and <em>H. J. Briegel</em> (2026).</p></li>
+<li><p><a href="https://arxiv.org/abs/2608.28046">Emergent aggregation from collective foraging</a> by <em>G. Muñoz-Gil, A. López-Incera, V. Ramsten, G. Volpe, T. Müller</em> and <em>H. J. Briegel</em> (2026).</p></li>
+<li><p><a href="https://doi.org/10.1016/j.artint.2026.104489">Multi-excitation projective simulation with a many-body physics-inspired inductive bias</a> by <em>P. A. LeMaitre, M. Krumm</em> and <em>H. J. Briegel</em> (2026).</p></li>
+<li><p><a href="https://doi.org/10.2139/ssrn.6386955">Memory Traces on an Episodic-Semantic Continuum: Learning and Recall in a Unifying Computational Model</a> by <em>A. Q. Vining, A. López-Incera, J. Pazem, H. J. Briegel</em> and <em>T. Müller</em> (2026).</p></li>
+<li><p><a href="https://doi.org/10.3390/biomimetics11030201">(*) Emergence of Longitudinal Queues in Group Navigation: An Interpretable Approach via Projective Simulation</a> by <em>D. Kong, K. Xue, P. Wang</em> and <em>Z. Xu</em> (2026).</p></li>
+</ul>
+</section>
+<section id="section-1" class="level2">
+<h2 class="anchored" data-anchor-id="section-1">2025</h2>
+<ul>
+<li><p><a href="https://doi.org/10.1007/978-3-031-98119-7">Projective Simulation in Action</a> (book, Synthese Library) by <em>H. J. Briegel</em> and <em>T. Müller</em> (2025).</p></li>
+<li><p><a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0331047">Free Energy Projective Simulation (FEPS): Active inference with interpretability</a> by <em>J. Pazem, M. Krumm, A. Q. Vining, L. J. Fiderer</em> and <em>H. J. Briegel</em> (2025).</p></li>
+<li><p><a href="https://pubs.rsc.org/sm/article/21/46/8886/912973">Run-and-Tumble Particles Learning Chemotaxis</a> by <em>N. Tovazzi, G. Muñoz-Gil</em> and <em>M. Caraglio</em> (2025).</p></li>
+<li><p><a href="https://iopscience.iop.org/article/10.1088/1367-2630/ae02bc">Learning to reset in target search problems</a> by <em>G. Muñoz-Gil, H. J. Briegel</em> and <em>M. Caraglio</em> (2025).</p></li>
+<li><p><a href="https://doi.org/10.1109/FNWF66845.2025.11317170">(*) Enhancing Quantum Key Distribution with Quantum Projective Simulation</a> by <em>M. Ghadimi, S. S. Nande, H. K. Nazari, R. Bassoli</em> and <em>F. H. P. Fitzek</em> (2025).</p></li>
+<li><p><a href="https://doi.org/10.3389/frai.2025.1618678">(*) Elucidating simulated equivalence responding through dynamic visualization of structural connectivity and relational density</a> by <em>J. O’Sullivan, F. Jackson Brown</em> and <em>O. Ray</em> (2025).</p></li>
+</ul>
+</section>
+<section id="section-2" class="level2">
+<h2 class="anchored" data-anchor-id="section-2">2024</h2>
+<ul>
+<li><p><a href="https://pubs.rsc.org/en/content/articlehtml/2024/sm/d3sm01680c">Learning how to find targets in the micro-world: the case of intermittent active Brownian particles</a> by <em>M. Caraglio, H. Kaur, L. J. Fiderer, A. López-Incera, H. J. Briegel, T. Franosch</em> and <em>G. Muñoz-Gil</em> (2024).</p></li>
+<li><p><a href="https://iopscience.iop.org/article/10.1088/1367-2630/ad19a8">Optimal foraging strategies can be learned</a> by <em>G. Muñoz-Gil, A. López-Incera, L. J. Fiderer</em> and <em>H. J. Briegel</em> (2024).</p></li>
+<li><p><a href="https://doi.org/10.1088/2058-9565/ad5907">Towards interpretable quantum machine learning via single-photon quantum walks</a> by <em>F. Flamini, M. Krumm, L. J. Fiderer, T. Müller</em> and <em>H. J. Briegel</em> (2024).</p></li>
+<li><p><a href="https://doi.org/10.22331/q-2024-05-14-1343">Hybrid discrete-continuous compilation of trapped-ion quantum circuits with deep reinforcement learning</a> by <em>F. Preti, M. Schilling, S. Jerbi, L. M. Trenkwalder, H. Poulsen Nautrup, F. Motzoi</em> and <em>H. J. Briegel</em> (2024).</p></li>
+<li><p><a href="https://doi.org/10.1103/PhysRevA.110.062613">(*) Demonstration of quantum projective simulation on a single-photon-based quantum computer</a> by <em>G. Franceschetto</em> and <em>A. Ricou</em> (2024).</p></li>
+<li><p><a href="https://doi.org/10.1109/QCE60285.2024.10301">(*) Entanglement-enhanced Quantum Reinforcement Learning: an Application using Single-Photons</a> by <em>J. M. Gaspar, A. Bergerault, V. Apostolou</em> and <em>A. Ricou</em> (2024).</p></li>
+<li><p><a href="https://doi.org/10.1088/1367-2630/ad23a6">(*) Optimization of tensor network codes with reinforcement learning</a> by <em>C. Mauron, T. Farrelly</em> and <em>T. M. Stace</em> (2024).</p></li>
+</ul>
+</section>
+<section id="section-3" class="level2">
+<h2 class="anchored" data-anchor-id="section-3">2023</h2>
+<ul>
+<li><a href="https://doi.org/10.1007/s11023-022-09619-5">How a Minimal Learning Agent can Infer the Existence of Unobserved Variables in a Complex Environment</a> by <em>B. Eva, K. Ried, T. Müller</em> and <em>H. J. Briegel</em> (2023).</li>
+</ul>
+</section>
+<section id="section-4" class="level2">
+<h2 class="anchored" data-anchor-id="section-4">2021</h2>
+<ul>
+<li><p><a href="https://doi.org/10.1186/s12915-021-01028-x">Honeybee communication during collective defence is shaped by predation</a> by <em>A. López-Incera, M. Nouvian, K. Ried, T. Müller</em> and <em>H. J. Briegel</em> (2021).</p></li>
+<li><p><a href="https://doi.org/10.1038/s41586-021-03242-7">Experimental quantum speed-up in reinforcement learning agents</a> by <em>V. Saggio, B. E. Asenbeck, A. Hamann, T. Strömberg, P. Schiansky, V. Dunjko, N. Friis, N. C. Harris, M. Hochberg, D. Englund, S. Wölk, H. J. Briegel</em> and <em>P. Walther</em> (2021).</p></li>
+<li><p><a href="https://doi.org/10.1103/PRXQuantum.2.010328">Quantum Enhancements for Deep Reinforcement Learning in Large Spaces</a> by <em>S. Jerbi, L. M. Trenkwalder, H. Poulsen Nautrup, H. J. Briegel</em> and <em>V. Dunjko</em> (2021).</p></li>
+<li><p><a href="https://doi.org/10.4114/intartif.vol24iss67pp90-101">(*) Quantum Circuit Synthesis Using Projective Simulation</a> by <em>O. Menegasso Pires, E. Inacio Duzzioni, J. Marchi</em> and <em>R. De Santiago</em> (2021).</p></li>
+<li><p><a href="https://doi.org/10.1007/s42484-021-00037-x">(*) A projective simulation scheme for partially observable multi-agent systems</a> by <em>R. Kheiri</em> (2021).</p></li>
+<li><p><a href="https://doi.org/10.1162/neco_a_01346">(*) Enhanced Equivalence Projective Simulation: A Framework for Modeling Formation of Stimulus Equivalence Classes</a> by <em>A. Abolpour Mofrad, A. Yazidi, S. Abolpour Mofrad, H. L. Hammer</em> and <em>E. Arntzen</em> (2021).</p></li>
+</ul>
+</section>
+<section id="section-5" class="level2">
+<h2 class="anchored" data-anchor-id="section-5">2020</h2>
+<ul>
+<li><p><a href="https://doi.org/10.1103/PRXQuantum.1.010301">Machine Learning for Long-Distance Quantum Communication</a> by <em>J. Wallnöfer, A. A. Melnikov, W. Dür</em> and <em>H. J. Briegel</em> (2020).</p></li>
+<li><p><a href="https://doi.org/10.1088/1367-2630/ab783c">Photonic architecture for reinforcement learning</a> by <em>F. Flamini, A. Hamann, S. Jerbi, L. M. Trenkwalder, H. Poulsen Nautrup</em> and <em>H. J. Briegel</em> (2020).</p></li>
+<li><p><a href="https://doi.org/10.3389/frobt.2020.00042">Skill Learning by Autonomous Robotic Playing Using Active Learning and Exploratory Behavior Composition</a> by <em>S. Hangl, V. Dunjko, H. J. Briegel</em> and <em>J. Piater</em> (2020).</p></li>
+<li><p><a href="https://doi.org/10.1007/s42484-020-00023-9">On the convergence of projective-simulation-based reinforcement learning in Markov decision processes</a> by <em>W. L. Boyajian, J. Clausen, L. M. Trenkwalder, V. Dunjko</em> and <em>H. J. Briegel</em> (2020).</p></li>
+<li><p><a href="https://doi.org/10.1371/journal.pone.0243628">Development of swarm behavior in artificial learning agents that adapt to different foraging environments</a> by <em>A. López-Incera, K. Ried, T. Müller</em> and <em>H. J. Briegel</em> (2020).</p></li>
+<li><p><a href="https://doi.org/10.1162/neco_a_01274">(*) Equivalence Projective Simulation as a Framework for Modeling Formation of Stimulus Equivalence Classes</a> by <em>A. Abolpour Mofrad, A. Yazidi, H. L. Hammer</em> and <em>E. Arntzen</em> (2020).</p></li>
+</ul>
+</section>
+<section id="section-6" class="level2">
+<h2 class="anchored" data-anchor-id="section-6">2019</h2>
+<ul>
+<li><p><a href="https://doi.org/10.1371/journal.pone.0212044">Modelling collective motion based on the principle of agency: General framework and the case of marching locusts</a> by <em>K. Ried, T. Müller</em> and <em>H. J. Briegel</em> (2019).</p></li>
+<li><p><a href="https://doi.org/10.22331/q-2019-12-16-215">Optimizing Quantum Error Correction Codes with Reinforcement Learning</a> by <em>H. Poulsen Nautrup, N. Delfosse, V. Dunjko, H. J. Briegel</em> and <em>N. Friis</em> (2019).</p></li>
+<li><p><a href="https://doi.org/10.1088/2058-9565/aaef5e">Speeding-up the decision making of a learning agent using an ion trap quantum processor</a> by <em>T. Sriarunothai, S. Wölk, G. S. Giri, N. Friis, V. Dunjko, H. J. Briegel</em> and <em>C. Wunderlich</em> (2019).</p></li>
+</ul>
+</section>
+<section id="section-7" class="level2">
+<h2 class="anchored" data-anchor-id="section-7">2018</h2>
+<ul>
+<li><p><a href="https://doi.org/10.1073/pnas.1714936115">Active learning machine learns to create new quantum experiments</a> by <em>A. A. Melnikov, H. Poulsen Nautrup, M. Krenn, V. Dunjko, M. Tiersch, A. Zeilinger</em> and <em>H. J. Briegel</em> (2018).</p></li>
+<li><p><a href="https://doi.org/10.1109/ACCESS.2018.2876494">Benchmarking Projective Simulation in Navigation Problems</a> by <em>A. A. Melnikov, A. Makmal</em> and <em>H. J. Briegel</em> (2018).</p></li>
+<li><p><a href="https://doi.org/10.1103/PhysRevA.97.022303">Quantum machine learning with glow for episodic tasks and decision games</a> by <em>J. Clausen</em> and <em>H. J. Briegel</em> (2018).</p></li>
+<li><p><a href="https://doi.org/10.1111/1746-8361.12222">A Stochastic Process Model for Free Agency under Indeterminism</a> by <em>T. Müller</em> (2018).</p></li>
+</ul>
+</section>
+<section id="section-8" class="level2">
+<h2 class="anchored" data-anchor-id="section-8">2017</h2>
+<ul>
+<li><p><a href="https://doi.org/10.1038/s41598-017-14740-y">Projective simulation with generalization</a> by <em>A. A. Melnikov, A. Makmal, V. Dunjko</em> and <em>H. J. Briegel</em> (2017).</p></li>
+<li><p><a href="https://arxiv.org/abs/1708.00123">(*) Quantum Projective Simulation with Hamiltonian Evolution: A study in reinforcement learning</a> by <em>A. Katabarwa</em> and <em>N. Karimatari</em> (2017).</p></li>
+<li><p><a href="https://arxiv.org/abs/1709.06049">(*) A novel skill-based programming paradigm based on autonomous playing and skill-centric testing</a> by <em>S. Hangl, A. Mennel</em> and <em>J. Piater</em> (2017).</p></li>
+<li><p><a href="https://link.springer.com/article/10.1007/s00502-017-0516-0">(*) Autonomous robots: potential, advances and future direction</a> by <em>S. Hangl, E. Ugur</em> and <em>J. Piater</em> (2017).</p></li>
+</ul>
+</section>
+<section id="section-9" class="level2">
+<h2 class="anchored" data-anchor-id="section-9">2016</h2>
+<ul>
+<li><p><a href="https://doi.org/10.1109/ACCESS.2016.2556579">Meta-learning within Projective Simulation</a> by <em>A. Makmal, A. A. Melnikov, V. Dunjko</em> and <em>H. J. Briegel</em> (2016).</p></li>
+<li><p><a href="https://doi.org/10.1109/IROS.2016.7759434">(*) Robotic playing for hierarchical complex skill learning</a> by <em>S. Hangl, E. Ugur, S. Szedmak</em> and <em>J. Piater</em> (2016).</p></li>
+</ul>
+</section>
+<section id="section-10" class="level2">
+<h2 class="anchored" data-anchor-id="section-10">2015</h2>
+<ul>
+<li><p><a href="https://doi.org/10.1007/s00354-015-0102-0">Projective Simulation for Classical Learning Agents: A Comprehensive Investigation</a> by <em>J. Mautner, A. Makmal, D. Manzano, M. Tiersch</em> and <em>H. J. Briegel</em> (2015).</p></li>
+<li><p><a href="https://doi.org/10.1038/srep12874">Adaptive quantum computation in changing environments using projective simulation</a> by <em>M. Tiersch, E. J. Ganahl</em> and <em>H. J. Briegel</em> (2015).</p></li>
+<li><p><a href="https://doi.org/10.1088/1367-2630/17/2/023006">Quantum-enhanced deliberation of learning agents using trapped ions</a> by <em>V. Dunjko, N. Friis</em> and <em>H. J. Briegel</em> (2015).</p></li>
+<li><p><a href="https://doi.org/10.1007/s11023-015-9381-y">A Chance for Attributable Agency</a> by <em>H. J. Briegel</em> and <em>T. Müller</em> (2015).</p></li>
+</ul>
+</section>
+<section id="section-11" class="level2">
+<h2 class="anchored" data-anchor-id="section-11">2014</h2>
+<ul>
+<li><p><a href="https://doi.org/10.1103/PhysRevX.4.031002">Quantum Speedup for Active Learning Agents</a> by <em>G. D. Paparo, V. Dunjko, A. Makmal, M. A. Martin-Delgado</em> and <em>H. J. Briegel</em> (2014).</p></li>
+<li><p><a href="https://doi.org/10.5430/air.v3n3p24">Projective simulation applied to the grid-world and the mountain-car problem</a> by <em>A. A. Melnikov, A. Makmal</em> and <em>H. J. Briegel</em> (2014).</p></li>
+</ul>
+</section>
+<section id="section-12" class="level2">
+<h2 class="anchored" data-anchor-id="section-12">2012</h2>
+<ul>
+<li><p><a href="https://doi.org/10.1038/srep00522">On creative machines and the physical origins of freedom</a> by <em>H. J. Briegel</em> (2012).</p></li>
+<li><p><a href="https://www.nature.com/articles/srep00400">Projective simulation for artificial intelligence</a> by <em>H. J. Briegel</em> and <em>G. De las Cuevas</em> (2012).</p></li>
+</ul>
+<hr>
+<p>(*) Papers by authors outside the Quantum Information and Computation group at the UIBK.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/qic-ibk\.github\.io\/projective_simulation\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/qic-ibk/projective_simulation/blob/master/webpage/research.md" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/qic-ibk/projective_simulation/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
