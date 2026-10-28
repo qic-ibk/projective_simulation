@@ -13,26 +13,16 @@ Projective Simulation
 <a href="https://badge.fury.io/py/projective_simulation"><img src="https://img.shields.io/badge/python-3.10-red" alt="Python version"></a>
 </p>
 <p align="center">
-<a href="https://qic-ibk.github.io/projective_simulation/">Get
-started</a> |
-<a href="https://qic-ibk.github.io/projective_simulation/lib_nbs/index_docs.html">Documentation</a>
-|
+<a href="https://qic-ibk.github.io/projective_simulation/">Get started</a> \|
+<a href="https://qic-ibk.github.io/projective_simulation/lib_nbs/index_docs.html">Documentation</a> \|
 <a href="https://qic-ibk.github.io/projective_simulation/tutorials/index_tutorials.html">Tutorials</a>
 </p>
 
-Projective Simulation (PS) is a framework for studying agency from a
-physical perspective. PS agents learn from interaction with their
-environment and base their decisions on **episodic memory**. Internally,
-their deliberation corresponds to **random walks on a clip network
-(graph)**, which provides an interpretable route to physical
-realizations and analysis.
+Projective Simulation (PS) is a framework for studying agency from a physical perspective. PS agents learn from interaction with their environment and base their decisions on **episodic memory**. Internally, their deliberation corresponds to **random walks on a clip network (graph)**, which provides an interpretable route to physical realizations and analysis.
 
-This library provides all the necessary tools to develop, deploy, and train PS
-agents in a variety of environments. Its content spans from entry-level
-[tutorials](https://qic-ibk.github.io/projective_simulation/tutorials/index_tutorials.html) that introduce the core
-principles of PS to cutting-edge [research](https://qic-ibk.github.io/projective_simulation/webpage/research.html) on
-the latest developments and applications. It is actively developed by
-the [QIC group at UIBK](https://www.uibk.ac.at/en/th-physik/qic-group/).
+This library provides all the necessary tools to develop, deploy, and train PS agents in a variety of environments. Its content ranges from entry-level [tutorials](https://qic-ibk.github.io/projective_simulation/tutorials/index_tutorials.html) introducing the core principles of PS to cutting-edge [research](https://qic-ibk.github.io/projective_simulation/webpage/research.html) on the latest developments and applications. It is actively developed by the [QIC group at UIBK](https://www.uibk.ac.at/en/th-physik/qic-group/).
+
+This [mindmap](https://qic-ibk.github.io/projective_simulation/figs/PS_mindmap.html) will guide through the different existing versions of PS.
 
 ## Installation
 
@@ -42,13 +32,11 @@ Projective simulation is available for `python>=3.10` via
 pip install projective_simulation
 ```
 
-This will also install the necessary library requirements.
+This will also install all required dependencies.
 
 ## Getting Started
 
-To begin exploring Projective Simulation, we recommend starting with the
-[tutorials](https://qic-ibk.github.io/projective_simulation/tutorials/index_tutorials.html), which cover topics from the
-basics to more advanced applications.
+To begin exploring Projective Simulation, we recommend to start with the [tutorials](https://qic-ibk.github.io/projective_simulation/tutorials/index_tutorials.html), which cover everything from the basics to more advanced applications.
 
 If you want to develop or deploy PS agents, please check the
 [documentation](https://qic-ibk.github.io/projective_simulation/lib_nbs/index_docs.ipynb).
